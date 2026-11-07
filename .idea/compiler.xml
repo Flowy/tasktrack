@@ -6,7 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="appjava" />
+        <module name="tasktrack-api" />
+        <module name="tasktrack-server" />
+        <module name="tasktrack-app" />
+        <module name="tasktrack-client" />
       </profile>
     </annotationProcessing>
   </component>

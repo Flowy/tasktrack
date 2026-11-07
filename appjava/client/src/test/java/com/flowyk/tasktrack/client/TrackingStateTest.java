@@ -1,8 +1,6 @@
 package com.flowyk.tasktrack.client;
 
-import com.flowyk.tasktrack.client.TrackingState;
 import com.flowyk.tasktrack.api.ApplicationContext;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

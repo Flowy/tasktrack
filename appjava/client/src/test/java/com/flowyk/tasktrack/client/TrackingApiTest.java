@@ -1,20 +1,14 @@
 package com.flowyk.tasktrack.client;
-import com.flowyk.tasktrack.api.*;
 
-import com.flowyk.tasktrack.client.MainWindow;
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-
-import com.flowyk.tasktrack.client.TrackingPanel;
-import com.flowyk.tasktrack.client.TrackingState;
+import com.flowyk.tasktrack.api.ApplicationContext;
+import com.flowyk.tasktrack.api.TrackingApi;
 import org.junit.jupiter.api.Test;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.SwingUtilities;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrackingApiTest {
