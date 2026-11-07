@@ -5,23 +5,23 @@ Status: Implementing
 ## Confirmed scope
 
 A compact Java desktop window that stays above ordinary application windows,
-with a button to start and stop. State is local to the process with no persistence.
+with a button to start and pause. State is local to the process with no persistence.
 This scope replaces the earlier proposed task list and storage features.
 
 ## Functional requirements
 
-- **FR-001:** Show a compact desktop window with a visible running/stopped status and one Start/Stop button.
+- **FR-001:** Show a compact desktop window with a visible running/stopped status and one Start timer/Pause button.
 - **FR-002:** Keep the visible, non-minimized window always on top without repeatedly requesting focus.
-- **FR-008:** Initially show Stopped and Start. Clicking Start changes status to Running and the button to Stop; clicking Stop reverses this. Repeated cycles work.
+- **FR-008:** Initially show Stopped and Start timer. Clicking Start timer changes status to Running and the button to Pause; clicking Pause returns to Stopped and Start timer. Repeated cycles work.
 - **FR-009:** Keep running state only in memory. Closing exits the application; reopening starts stopped. Do not load or save state.
 
 FR-003 through FR-007 are retired: the previous task CRUD and persistence proposals are outside this iteration. IDs are not reused.
 
 ## Acceptance criteria
 
-1. Launch: a compact window shows Stopped and Start (FR-001, FR-008).
+1. Launch: a compact window shows Stopped and Start timer (FR-001, FR-008).
 2. Activate another ordinary desktop application: TaskTrack stays above it and allows that application to keep keyboard focus (FR-002).
-3. Click Start, then Stop, then repeat: status and action labels stay consistent (FR-008).
+3. Click Start timer, then Pause, then repeat: status and action labels stay consistent (FR-008).
 4. Focus the button and press Space: the same transition occurs (FR-008).
 5. Close while running and reopen: the app starts stopped and no state file is written (FR-009).
 
@@ -43,6 +43,8 @@ Persistence, task lists, timers, network services, tray integration, installers,
 
 ## Validation evidence
 
+- PASS: Start timer/Pause button delegates to explicit `start()`/`pause()` state methods. Compiled with Java 25 and ran all seven JUnit checks, including repeated start/pause commands and UI cycles (FR-001, FR-008, FR-009). No state toggle method remains. Desktop manual checks remain pending.
+- PASS: extracted `state.TrackingState` from the Swing client without changing requirements. Compiled main and test sources with Corretto 25.0.2 (`--release 25`); all five existing window checks and two independent state checks passed via JUnitCore (FR-008 repeated transitions, FR-009 instance isolation). Manual desktop checks remain pending.
 - PASS: compiled application with the installed Java 8 javac using UTF-8 and Java 8 source/target settings.
 - PASS: temporary Swing smoke harness checked initial labels, four start/stop cycles, Space key binding, always-on-top property, exit-on-close, fixed layout, and a fresh window starting stopped after disposing a running one.
 - The implementation contains no file, preferences, or network operations.

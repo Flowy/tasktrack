@@ -1,5 +1,9 @@
 # 001 - Tasks
 
+- [x] Change button labels to Start timer/Pause and replace state toggle with explicit start/pause methods; verify repeated commands and UI cycles (FR-001, FR-008, FR-009). Java 25 compilation and all seven JUnit checks passed.
+
+- [x] Extract running state and transitions from the client into an independent state holder; preserve existing Swing checks and verify state transitions and instance isolation without Swing (FR-008, FR-009). Java 25 compilation and all seven JUnit checks passed.
+
 - [x] Align Maven and launch documentation with the confirmed Java 25 baseline (QR-003); verify with JDK 25 if available.
 
 - [x] Separate the starter from UI code in `com.flowyk.tasktrack.client` and run existing acceptance checks (FR-001, FR-002, FR-008, FR-009, QR-002).

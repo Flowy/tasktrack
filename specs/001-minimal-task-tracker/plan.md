@@ -4,11 +4,11 @@ Status: Planned
 
 ## Decisions
 
-- Keep `TaskTrackApp` as the application starter and delegate window construction to `client.TaskTrackWindow`. The `.client` boundary is a Java package, within the existing application artifact; it owns Swing layout, window configuration, and in-memory UI state. Preserve FR-001, FR-002, FR-008, FR-009 and QR-002 behavior and the existing main class.
+- Keep `TaskTrackApp` as the application starter and delegate window construction to `client.TaskTrackWindow`. The `.client` boundary owns Swing layout, window configuration, and presentation. Preserve FR-001, FR-002, FR-008, FR-009 and QR-002 behavior and the existing main class.
 - Use Swing/AWT from the JDK: a small native desktop application without external dependencies.
 - Use Java 25, as confirmed by the user and configured in IntelliJ. Set Maven compiler release to 25 and use JDK 25 for builds and verification.
 - Use a JFrame with always-on-top enabled, standard decorations, and exit-on-close.
-- Use a JPanel containing a status label and a JButton. Keep one boolean running state in the window instance and update both labels together on the Swing event dispatch thread.
+- Use a JPanel containing a status label and a JButton labeled Start timer or Pause. Keep the boolean running state in a Swing-independent `state.TrackingState` holder with explicit, idempotent `start()` and `pause()` methods and no toggle method. The client chooses the action from `isRunning()`. Each new window owns a fresh holder; the panel renders both labels on the Swing event dispatch thread. Retain the existing Running/Stopped status labels. This change does not add elapsed-time measurement or display.
 - No storage, preferences, network access, or shutdown persistence.
 - Configure Maven compilation and an executable JAR with com.flowyk.tasktrack.TaskTrackApp as its main class.
 

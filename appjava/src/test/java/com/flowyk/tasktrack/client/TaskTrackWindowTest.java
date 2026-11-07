@@ -30,7 +30,7 @@ public class TaskTrackWindowTest {
                 if (component instanceof JButton) button = (JButton) component;
             }
             assertNotNull("Visible status is required", status);
-            assertNotNull("Start/Stop action is required", button);
+            assertNotNull("Start timer/Pause action is required", button);
         });
     }
 
@@ -45,7 +45,7 @@ public class TaskTrackWindowTest {
     public void fr001AndFr008_launchStopped() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             assertEquals("Stopped", status.getText());
-            assertEquals("Start", button.getText());
+            assertEquals("Start timer", button.getText());
             assertTrue(status.isVisible());
             assertTrue(button.isVisible());
         });
@@ -57,15 +57,15 @@ public class TaskTrackWindowTest {
     }
 
     @Test
-    public void fr008_startAndStopRepeatedly() throws Exception {
+    public void fr008_startAndPauseRepeatedly() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             for (int cycle = 0; cycle < 5; cycle++) {
                 button.doClick(0);
                 assertEquals("Running", status.getText());
-                assertEquals("Stop", button.getText());
+                assertEquals("Pause", button.getText());
                 button.doClick(0);
                 assertEquals("Stopped", status.getText());
-                assertEquals("Start", button.getText());
+                assertEquals("Start timer", button.getText());
             }
         });
     }
@@ -91,7 +91,7 @@ public class TaskTrackWindowTest {
         openWindow();
         SwingUtilities.invokeAndWait(() -> {
             assertEquals("Stopped", status.getText());
-            assertEquals("Start", button.getText());
+            assertEquals("Start timer", button.getText());
         });
     }
 }
