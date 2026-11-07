@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JButton;
@@ -85,6 +86,7 @@ public class MainWindowTest {
     public void fr011AndFr012_selectTasksAlongsideStartPause() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             JComboBox<?> selector = (JComboBox<?>) find(window.getContentPane(), "taskSelector");
+            assertNotNull(selector);
             assertEquals(3, selector.getItemCount());
             assertEquals(0, selector.getSelectedIndex());
             assertEquals("Choose task", selector.getAccessibleContext().getAccessibleName());
@@ -100,13 +102,14 @@ public class MainWindowTest {
         });
         openWindow();
         SwingUtilities.invokeAndWait(() -> assertEquals(0,
-                ((JComboBox<?>) find(window.getContentPane(), "taskSelector")).getSelectedIndex()));
+                ((JComboBox<?>) Objects.requireNonNull(find(window.getContentPane(), "taskSelector"))).getSelectedIndex()));
     }
 
     @Test
     public void fr013_taskTextOpensPopupWithoutArrow() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             JComboBox<?> selector = (JComboBox<?>) find(window.getContentPane(), "taskSelector");
+            assertNotNull(selector);
             for (Component child : selector.getComponents()) {
                 assertFalse(child instanceof JButton, "Task selector has no arrow button");
             }
@@ -127,11 +130,11 @@ public class MainWindowTest {
             Component controls = find(root, "windowControls");
             assertNotNull(controls);
             assertEquals(java.awt.Cursor.MOVE_CURSOR, controls.getCursor().getType());
-            assertEquals(java.awt.Cursor.DEFAULT_CURSOR, find(root, "Close app").getCursor().getType());
+            assertEquals(java.awt.Cursor.DEFAULT_CURSOR, Objects.requireNonNull(find(root, "Close app")).getCursor().getType());
             assertFalse(controls.isVisible());
             assertEquals(48, window.getHeight());
             JButton toggle = (JButton) find(root, "toggleWindowControls");
-            assertTrue(toggle.isVisible());
+            assertTrue(Objects.requireNonNull(toggle).isVisible());
             assertEquals("⇈", toggle.getText());
             assertEquals("Show window controls", toggle.getToolTipText());
             assertNotNull(toggle.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke("pressed SPACE")));
@@ -179,7 +182,7 @@ public class MainWindowTest {
                     closing.set(true);
                 }
             });
-            ((JButton) find(root, "Close app")).doClick(0);
+            ((JButton) Objects.requireNonNull(find(root, "Close app"))).doClick(0);
             assertTrue(closing.get(), "Close button uses normal app closing path");
         });
     }
