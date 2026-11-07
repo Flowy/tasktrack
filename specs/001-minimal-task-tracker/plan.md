@@ -70,3 +70,7 @@ Use Unicode U+21C8/U+21CA double arrows for the settings toggle (up to expand ab
 Introduce TaskTrackLayout with enum handles and typed text, distance, size, insets, and font accessors. Return fresh mutable AWT values to avoid shared mutation. Move presentation values and component names from TaskTrackWindow; retain Swing layout constraints and behavior there. Verify using the existing state/window suite.
 
 Construct one TaskTrackLayout per window and pass it to TrackingPanel and toggle rendering; expose a public constructor and non-static typed accessors.
+
+## Tracking panel extraction
+
+Move the existing nested TrackingPanel unchanged into a public final client class with a public Layout constructor. Keep state, rendering, selector configuration, sizing, and event handlers together; MainWindow retains window composition. Verify with the existing state/window regression suite.

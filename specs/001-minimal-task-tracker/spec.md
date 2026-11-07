@@ -111,3 +111,9 @@ Verification: Java 25 UTF-8 main/test compilation and all 11 existing JUnit chec
 
 Layout holder refinement: typed accessors are instance methods. Each window shares its holder with its tracking panel.
 Verification: instance accessor refinement compiled with Java 25; all 11 existing JUnit checks passed (FR-001, FR-008, FR-010, FR-013).
+
+## Tracking panel extraction
+
+Confirmed request: extract the task display and Start/Pause button together into a standalone panel composed by MainWindow. Preserve all existing UI and behavior (FR-001, FR-008, FR-011, FR-012, FR-013).
+
+Verification: IntelliJ project build succeeded; all eight MainWindowTest and three TrackingStateTest checks passed after extraction (FR-001, FR-008, FR-011, FR-012, FR-013). Physical desktop appearance remains unverified.

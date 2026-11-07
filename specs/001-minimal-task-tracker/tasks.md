@@ -50,3 +50,5 @@
 - [x] Extract TaskTrackWindow presentation values into a typed layout holder and run existing regressions (FR-001, FR-008, FR-010, FR-013).
 
 - [x] Convert layout accessors to instance methods and verify existing regressions (FR-001, FR-008, FR-010, FR-013).
+
+- [x] Extract TrackingPanel into its own client class with unchanged UI and run existing regressions (FR-001, FR-008, FR-011, FR-012, FR-013). IntelliJ build succeeded; all 11 existing state/window tests passed.
