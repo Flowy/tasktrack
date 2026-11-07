@@ -36,3 +36,13 @@
 - [x] Remove task selector arrow/border while preserving clickable text and popup (FR-013). Verify popup activation and run existing regression checks.
 
 - [x] Remove closed-selector background and focus coloration (FR-013); compile and run existing checks.
+
+- [x] Extract ManipulationPanel and compose it in TaskTrackWindow; compile and run existing state/window regression checks (FR-010, FR-012).
+
+- [x] Replace hover with accessible show/hide toggle; verify pointer independence, layout, dragging, close and existing checks (FR-010).
+
+- [x] Remove tracking content dependency from ManipulationPanel; compose panels/toggle in TaskTrackWindow and run regressions (FR-010, FR-012).
+
+- [x] Extract WindowController with close/drag operations, inject into ManipulationPanel and run existing regression checks (FR-010).
+
+- [x] Replace settings toggle plus/minus with double up/down arrows and verify FR-010 and regression suite.

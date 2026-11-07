@@ -46,3 +46,21 @@ Use an immutable List<String> of three distinct sample task titles in TrackingSt
 For FR-013, retain JComboBox state, popup, and keyboard behavior using a BasicComboBoxUI delegate without an arrow button. Remove the selector border, use the full component bounds for the current value, and use a hand cursor to indicate clickability. Verify the existing suite and popup activation from a click on the selected text.
 
 Render the closed task value transparently and suppress the combo delegate's background/focus color painting; retain the standard list renderer for popup rows (FR-013).
+
+## Manipulation feature separation
+
+Extract a public final ManipulationPanel in the client package. It wraps supplied tracking content and owns the controls, drag state, recursive hover listeners, and window resizing/positioning. TaskTrackWindow composes it with TrackingPanel as the content pane. Keep existing component hierarchy and names so FR-010 regression checks exercise the extracted feature unchanged.
+
+## Button-controlled manipulation panel
+
+Confirmed request replaces hover with a button. Default: always-visible 24 pixel toggle left of supplied content, initially collapsed. Remove recursive hover listeners; retain drag/close and stationary-content pack adjustment. Update accessible action names and verify button toggling, pointer independence, positioning and existing regressions (FR-010).
+
+## Independent manipulation panel
+
+Make ManipulationPanel a standalone drag/close panel accepting only JFrame. Move toggle creation, root/body composition and stationary-content resize adjustment into TaskTrackWindow. Use the panel itself as windowControls, removing the redundant controls container. Run existing FR-010/FR-012 regressions.
+
+## Window controller
+
+Introduce WindowController holding JFrame and drag origins, with close(), startDrag(Point), dragTo(Point), and endDrag(). ManipulationPanel translates left-button mouse events into controller calls. TaskTrackWindow constructs and injects the controller. Retain existing layout/toggle responsibility and verify FR-010 regressions.
+
+Use Unicode U+21C8/U+21CA double arrows for the settings toggle (up to expand above, down to collapse); retain accessible actions and verify symbols in the existing FR-010 check.

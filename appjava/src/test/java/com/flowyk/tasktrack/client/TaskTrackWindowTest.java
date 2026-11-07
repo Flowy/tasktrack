@@ -69,7 +69,7 @@ public class TaskTrackWindowTest {
             assertEquals(2, button.getParent().getComponentCount());
             assertEquals(new Dimension(40, 32), button.getSize());
             assertTrue(window.isUndecorated());
-            assertEquals(8, window.getContentPane().getWidth() - button.getX() - button.getWidth());
+            assertEquals(8, window.getContentPane().getWidth() - SwingUtilities.convertPoint(button, 0, 0, window.getContentPane()).x - button.getWidth());
             Component selector = find(window.getContentPane(), "taskSelector");
             assertNotNull(selector);
             assertTrue(selector.getWidth() > 0);
@@ -119,7 +119,7 @@ public class TaskTrackWindowTest {
     }
 
     @Test
-    public void fr010_hoverDragAndClose() throws Exception {
+    public void fr010_toggleDragAndClose() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             Component root = window.getContentPane();
             Component controls = find(root, "windowControls");
@@ -128,12 +128,21 @@ public class TaskTrackWindowTest {
             assertEquals(java.awt.Cursor.DEFAULT_CURSOR, find(root, "Close app").getCursor().getType());
             assertFalse(controls.isVisible());
             assertEquals(48, window.getHeight());
+            JButton toggle = (JButton) find(root, "toggleWindowControls");
+            assertTrue(toggle.isVisible());
+            assertEquals("\u21C8", toggle.getText());
+            assertEquals("Show window controls", toggle.getToolTipText());
+            assertNotNull(toggle.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke("pressed SPACE")));
             Point initialLocation = window.getLocation();
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_ENTERED, 0, 0, 10, 40, 0, false));
+            assertFalse("Hover does not reveal controls", controls.isVisible());
+            toggle.doClick(0);
+            assertEquals("\u21CA", toggle.getText());
+            assertEquals("Hide window controls", toggle.getAccessibleContext().getAccessibleName());
             assertTrue(controls.isVisible());
             assertEquals(72, window.getHeight());
             assertEquals(initialLocation.y - 24, window.getY());
-            assertEquals(initialLocation.y + 8, window.getY() + button.getParent().getY() + button.getY());
+            assertEquals(initialLocation.y + 8, window.getY() + SwingUtilities.convertPoint(button, 0, 0, root).y);
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_EXITED, 0, 0, 120, 40, 0, false));
             assertTrue("Moving to a child stays inside", controls.isVisible());
             button.dispatchEvent(new MouseEvent(button, MouseEvent.MOUSE_ENTERED, 0, 0, 2, 2, 0, false));
@@ -149,10 +158,16 @@ public class TaskTrackWindowTest {
             controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_RELEASED, 0, 0,
                     5, 5, 130, 120, 1, false, MouseEvent.BUTTON1));
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_EXITED, 0, 0, -1, -1, 0, false));
+            assertTrue("Pointer exit leaves controls open", controls.isVisible());
+            toggle.doClick(0);
             assertFalse(controls.isVisible());
+            assertEquals("\u21C8", toggle.getText());
+            assertEquals("Show window controls", toggle.getAccessibleContext().getAccessibleName());
             assertEquals(48, window.getHeight());
             assertEquals(new Point(initialLocation.x + 30, initialLocation.y + 20), window.getLocation());
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_ENTERED, 0, 0, 5, 5, 0, false));
+            assertFalse(controls.isVisible());
+            toggle.doClick(0);
             assertTrue(controls.isVisible());
             AtomicBoolean closing = new AtomicBoolean();
             window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

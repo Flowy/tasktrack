@@ -3,8 +3,8 @@
 A minimal Java desktop window that stays above ordinary application windows.
 The window has no title bar, with a task dropdown on the left and Start/Pause on the right.
 On Windows, focus the window and press Alt+F4 to close it.
-Hover over the window to reveal the top panel. Drag its empty area to move the
-window, or click **×** to close the app. The panel hides when the pointer leaves.
+Click **⇈** to reveal the top panel; click **⇊** to hide it. Drag its empty area to move the
+window, or click **×** to close the app. Pointer entry and exit do not change panel visibility.
 Use the small **▶** button to start and **⏸** to pause. Hover for the action name.
 Choose from three sample tasks in the dropdown. The first task is selected initially; switching tasks preserves Start/Pause state. Task selection and running state live only in memory and reset when the application closes. There is no timer or persistence.
 
@@ -60,7 +60,7 @@ Maven writes test results to `appjava/target/surefire-reports/` and returns a
 nonzero exit code on failure. Tests need a graphical desktop; they do not show
 windows or send real keyboard/mouse input.
 
-The window checks cover hover controls, dragging, close-event dispatch,
+The window checks cover button-controlled window controls, dragging, close-event dispatch,
 the compact symbol button, repeated start/pause transitions,
 always-on-top configuration, Space activation binding, and fresh-window state.
 They reference requirement IDs in their names. Markdown requirements are not

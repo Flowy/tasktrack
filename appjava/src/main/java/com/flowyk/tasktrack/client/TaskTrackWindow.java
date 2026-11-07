@@ -1,14 +1,9 @@
 package com.flowyk.tasktrack.client;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -20,7 +15,6 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 
 public final class TaskTrackWindow {
@@ -32,98 +26,38 @@ public final class TaskTrackWindow {
         window.setUndecorated(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setAlwaysOnTop(true);
-        window.setContentPane(new WindowPanel(window));
+        JPanel root = new JPanel(new BorderLayout());
+        ManipulationPanel controls = new ManipulationPanel(new WindowController(window));
+        JButton toggle = new JButton();
+        toggle.setName("toggleWindowControls");
+        toggle.setPreferredSize(new Dimension(24, 24));
+        toggle.setMargin(new Insets(0, 0, 0, 0));
+        updateToggleAction(toggle, false);
+        toggle.addActionListener(_ -> {
+            int oldHeight = window.getHeight();
+            Point location = window.getLocation();
+            controls.setVisible(!controls.isVisible());
+            updateToggleAction(toggle, controls.isVisible());
+            window.pack();
+            window.setLocation(location.x, location.y + oldHeight - window.getHeight());
+        });
+        JPanel body = new JPanel(new BorderLayout());
+        body.add(toggle, BorderLayout.WEST);
+        body.add(new TrackingPanel(), BorderLayout.CENTER);
+        root.add(controls, BorderLayout.NORTH);
+        root.add(body, BorderLayout.CENTER);
+        window.setContentPane(root);
         window.setResizable(false);
         window.pack();
         window.setLocationRelativeTo(null);
         return window;
     }
 
-    private static final class WindowPanel extends JPanel {
-        private final JPanel controls = new JPanel(new BorderLayout());
-        private final JFrame window;
-        private Point dragOrigin;
-        private Point windowOrigin;
-
-        private WindowPanel(JFrame window) {
-            super(new BorderLayout());
-            this.window = window;
-            controls.setPreferredSize(new Dimension(280, 24));
-            controls.setName("windowControls");
-            controls.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            JButton close = new JButton("×");
-            close.setToolTipText("Close app");
-            close.setCursor(Cursor.getDefaultCursor());
-            close.getAccessibleContext().setAccessibleName("Close app");
-            close.setMargin(new Insets(0, 4, 0, 4));
-            close.setPreferredSize(new Dimension(24, 24));
-            close.addActionListener(_ -> window.dispatchEvent(
-                    new WindowEvent(window, WindowEvent.WINDOW_CLOSING)));
-            controls.add(close, BorderLayout.EAST);
-            add(controls, BorderLayout.NORTH);
-            add(new TrackingPanel(), BorderLayout.CENTER);
-
-            MouseAdapter drag = new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent event) {
-                    if (SwingUtilities.isLeftMouseButton(event)) {
-                        dragOrigin = event.getLocationOnScreen();
-                        windowOrigin = window.getLocation();
-                    }
-                }
-
-                @Override
-                public void mouseDragged(MouseEvent event) {
-                    if (dragOrigin != null) {
-                        window.setLocation(windowOrigin.x + event.getXOnScreen() - dragOrigin.x,
-                                windowOrigin.y + event.getYOnScreen() - dragOrigin.y);
-                    }
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent event) {
-                    dragOrigin = null;
-                    updateHover(event);
-                }
-            };
-            controls.addMouseListener(drag);
-            controls.addMouseMotionListener(drag);
-            installHover(this, new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent event) {
-                    setControlsVisible(true);
-                }
-
-                @Override
-                public void mouseExited(MouseEvent event) {
-                    updateHover(event);
-                }
-            });
-            controls.setVisible(false);
-        }
-
-        private void updateHover(MouseEvent event) {
-            Point point = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), this);
-            setControlsVisible(dragOrigin != null || contains(point));
-        }
-
-        private void setControlsVisible(boolean visible) {
-            if (controls.isVisible() == visible) return;
-            int oldHeight = window.getHeight();
-            Point location = window.getLocation();
-            controls.setVisible(visible);
-            window.pack();
-            window.setLocation(location.x, location.y + oldHeight - window.getHeight());
-        }
-
-        private static void installHover(Component component, MouseAdapter listener) {
-            component.addMouseListener(listener);
-            if (component instanceof Container container) {
-                for (Component child : container.getComponents()) {
-                    installHover(child, listener);
-                }
-            }
-        }
+    private static void updateToggleAction(JButton toggle, boolean visible) {
+        String action = visible ? "Hide window controls" : "Show window controls";
+        toggle.setText(visible ? "\u21CA" : "\u21C8");
+        toggle.setToolTipText(action);
+        toggle.getAccessibleContext().setAccessibleName(action);
     }
 
     private static final class TrackingPanel extends JPanel {

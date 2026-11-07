@@ -14,7 +14,7 @@ Includes static task selection; task editing and storage remain outside scope.
 - **FR-002:** Keep the visible, non-minimized window always on top without repeatedly requesting focus.
 - **FR-008:** Initially show ▶ (start timer). Clicking it starts tracking and shows ⏸ (pause); clicking pause returns to ▶. Repeated cycles work. Tooltips and accessible names identify the current action.
 - **FR-009:** Keep running state only in memory. Closing exits the application; reopening starts stopped. Do not load or save state.
-- **FR-010:** Initially hide the entire manipulation panel without reserving blank space. While the pointer is over the window, show a top panel with a drag area and a close button. Hide it and collapse its space when the pointer leaves, keeping it visible during a drag. Keep the tracking area stationary as the panel expands above it. Dragging moves the window; closing exits the app. Moving between controls must not hide the panel.
+- **FR-010:** Initially hide the top manipulation panel without reserving vertical space. An always-visible button toggles the drag and close panel. Pointer entry/exit never changes visibility. Keep the tracking area stationary on expansion/collapse. Dragging moves the window; closing exits the app. Give the toggle action tooltips, accessible names and keyboard activation.
 
 FR-003 through FR-007 are retired: the previous task CRUD and persistence proposals are outside this iteration. IDs are not reused.
 
@@ -25,7 +25,7 @@ FR-003 through FR-007 are retired: the previous task CRUD and persistence propos
 3. Click ▶, then ⏸, then repeat: symbols, tooltips, and accessible names stay consistent (FR-008).
 4. Focus the button and press Space: the same transition occurs (FR-008).
 5. Close while running and reopen: the app starts stopped and no state file is written (FR-009).
-6. Hover over the window and its controls: the top panel stays visible; drag its empty area to move the window, leave to hide it, and use its close button to exit (FR-010).
+6. Toggle the top panel with its button, check pointer entry/exit does not change visibility, drag to move, toggle to collapse, and close to exit (FR-010).
    The drag area uses a move cursor; the close button uses the standard arrow cursor (FR-010).
 
 ## Quality requirements
@@ -83,3 +83,23 @@ Acceptance: launch shows the first task; choose each entry by the standard dropd
 FR-013 refinement: the closed task selector displays plain text with no background fill or focus coloration. Keep normal selection highlighting inside the task popup.
 
 - PASS (FR-013 coloration refinement): Java 25 main/test compilation and all 11 existing JUnit checks pass, including task popup activation. Code review confirms transparent closed-value renderer and suppressed background/focus-color painting; visual appearance remains a manual check.
+
+## Manipulation feature separation
+
+Confirmed request: extract the manipulation panel (close button and drag zone) from TaskTrackWindow into a separate feature composed into the main window. Preserve FR-010 hover, collapse, positioning, drag, cursor, and close behavior; no new user behavior is introduced.
+
+- PASS (FR-010, FR-012 manipulation extraction): compiled main and test sources using Corretto 25.0.2 with UTF-8 and release 25; all 11 existing JUnit checks passed. Synthetic checks cover hover expansion/collapse, stationary tracking area, child transitions, drag displacement, cursors, and close dispatch through the extracted panel. Physical desktop checks remain pending.
+
+- PASS (FR-010 button activation): Java 25 UTF-8 compilation and all 11 JUnit checks passed. Updated regression verifies initial collapse, show/hide activation, action names, Space binding, pointer entry/exit independence, stationary tracking content, drag displacement, cursors and close dispatch. Real desktop interaction remains a manual check. Earlier hover verification entries are historical and superseded by button activation.
+
+Confirmed structural refinement: ManipulationPanel contains only drag and close controls and takes no tracking content. TaskTrackWindow composes tracking, manipulation controls and the toggle. Preserve FR-010 and FR-012 behavior.
+
+- PASS (FR-010, FR-012 independent manipulation panel): compiled main/tests with Java 25 and ran all 11 JUnit checks successfully after moving composition/toggle/resize into TaskTrackWindow. ManipulationPanel now accepts only JFrame and owns only drag/close controls. Physical desktop verification remains pending.
+
+Confirmed structural refinement: a custom controller holds the window and provides close dispatch and drag support. ManipulationPanel uses that controller instead of JFrame. Preserve FR-010 behavior.
+
+- PASS (FR-010 window controller): Java 25 main/test compilation and all 11 existing JUnit checks passed, including drag displacement and close-event dispatch through WindowController. Physical desktop interaction remains pending.
+
+FR-010 visual refinement: use an upward double arrow to show the manipulation panel and a downward double arrow to hide it. Preserve action tooltips and accessible names.
+
+- PASS (FR-010 double arrows): Java 25 compilation and all 11 JUnit checks passed, including up/down toggle symbol assertions before expansion, after expansion and after collapse. Visual desktop appearance remains unverified.
