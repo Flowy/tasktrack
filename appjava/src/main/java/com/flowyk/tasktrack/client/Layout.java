@@ -25,12 +25,12 @@ public final class Layout {
             case TOGGLE_NAME -> "toggleWindowControls";
             case SHOW_CONTROLS -> "Show window controls";
             case HIDE_CONTROLS -> "Hide window controls";
-            case SHOW_SYMBOL -> "\u21C8";
-            case HIDE_SYMBOL -> "\u21CA";
+            case SHOW_SYMBOL -> "⇈";
+            case HIDE_SYMBOL -> "⇊";
             case SELECTOR_NAME -> "taskSelector";
             case CHOOSE_TASK -> "Choose task";
-            case START_SYMBOL -> "\u25B6";
-            case PAUSE_SYMBOL -> "\u23F8";
+            case START_SYMBOL -> "▶";
+            case PAUSE_SYMBOL -> "⏸";
             case START_TIMER -> "Start timer";
             case PAUSE -> "Pause";
         };

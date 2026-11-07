@@ -64,7 +64,7 @@ public class MainWindowTest {
     @Test
     public void fr001AndFr008_launchStopped() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
-            assertAction("\u25B6", "Start timer");
+            assertAction("▶", "Start timer");
             assertTrue(button.isVisible());
             assertEquals(2, button.getParent().getComponentCount());
             assertEquals(new Dimension(40, 32), button.getSize());
@@ -74,8 +74,8 @@ public class MainWindowTest {
             assertNotNull(selector);
             assertTrue(selector.getWidth() > 0);
             assertTrue(selector.getX() + selector.getWidth() < button.getX());
-            assertTrue(button.getFont().canDisplay('\u25B6'));
-            assertTrue(button.getFont().canDisplay('\u23F8'));
+            assertTrue(button.getFont().canDisplay('▶'));
+            assertTrue(button.getFont().canDisplay('⏸'));
         });
     }
 
@@ -137,7 +137,7 @@ public class MainWindowTest {
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_ENTERED, 0, 0, 10, 40, 0, false));
             assertFalse("Hover does not reveal controls", controls.isVisible());
             toggle.doClick(0);
-            assertEquals("\u21CA", toggle.getText());
+            assertEquals("⇊", toggle.getText());
             assertEquals("Hide window controls", toggle.getAccessibleContext().getAccessibleName());
             assertTrue(controls.isVisible());
             assertEquals(72, window.getHeight());
@@ -192,9 +192,9 @@ public class MainWindowTest {
         SwingUtilities.invokeAndWait(() -> {
             for (int cycle = 0; cycle < 5; cycle++) {
                 button.doClick(0);
-                assertAction("\u23F8", "Pause");
+                assertAction("⏸", "Pause");
                 button.doClick(0);
-                assertAction("\u25B6", "Start timer");
+                assertAction("▶", "Start timer");
             }
         });
     }
@@ -218,7 +218,7 @@ public class MainWindowTest {
         });
         openWindow();
         SwingUtilities.invokeAndWait(() -> {
-            assertAction("\u25B6", "Start timer");
+            assertAction("▶", "Start timer");
         });
     }
 }

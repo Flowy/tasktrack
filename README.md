@@ -3,9 +3,9 @@
 A minimal Java desktop window that stays above ordinary application windows.
 The window has no title bar, with a task dropdown on the left and Start/Pause on the right.
 On Windows, focus the window and press Alt+F4 to close it.
-Click **⇈** to reveal the top panel; click **⇊** to hide it. Drag its empty area to move the
-window, or click **×** to close the app. Pointer entry and exit do not change panel visibility.
-Use the small **▶** button to start and **⏸** to pause. Hover for the action name.
+Click **Ã¢â€¡Ë†** to reveal the top panel; click **Ã¢â€¡Å ** to hide it. Drag its empty area to move the
+window, or click **Ãƒâ€”** to close the app. Pointer entry and exit do not change panel visibility.
+Use the small **Ã¢â€“Â¶** button to start and **Ã¢ÂÂ¸** to pause. Hover for the action name.
 Choose from three sample tasks in the dropdown. The first task is selected initially; switching tasks preserves Start/Pause state. Task selection and running state live only in memory and reset when the application closes. There is no timer or persistence.
 
 ## Run
@@ -42,6 +42,14 @@ with technical decisions in its [plan](specs/001-minimal-task-tracker/plan.md).
 
 - `appjava/`: Maven Java application module.
 - `specs/`: product principles, feature specifications, plans, and tasks.
+
+The `com.flowyk.tasktrack.api.TrackingApi` interface exposes `getTasks()`,
+`start(String task)`, and `stop(String task)`.
+`LocalTrackingApi` supplies the local implementation. `TrackingState` holds client selection and running state
+and sends the selected task with each start/stop call. To supply another implementation,
+use `new TrackingPanel(layout, api)`. Calls are synchronous on the Swing event
+dispatch thread. Stop preserves the selected task and matches the Pause button.
+See [002 - Tracking API](specs/002-tracking-api/spec.md).
 
 ## Automated specification checks
 

@@ -1,14 +1,25 @@
 package com.flowyk.tasktrack.client;
 
+import com.flowyk.tasktrack.api.TrackingApi;
 import java.util.List;
+import java.util.Objects;
 
 public class TrackingState {
-    private final List<String> tasks = List.of("Plan the day", "Implement task selection", "Review changes");
-    private String selectedTask = tasks.getFirst();
+    private final TrackingApi api;
+    private String selectedTask;
     private boolean running;
 
+    public TrackingState() {
+        this(new LocalTrackingApi());
+    }
+
+    public TrackingState(TrackingApi api) {
+        this.api = Objects.requireNonNull(api, "api");
+        selectedTask = api.getTasks().getFirst();
+    }
+
     public List<String> getTasks() {
-        return tasks;
+        return api.getTasks();
     }
 
     public String getSelectedTask() {
@@ -16,7 +27,7 @@ public class TrackingState {
     }
 
     public void selectTask(String task) {
-        if (task == null || !tasks.contains(task)) {
+        if (task == null || !getTasks().contains(task)) {
             throw new IllegalArgumentException("Select a task from the available tasks");
         }
         selectedTask = task;
@@ -27,10 +38,16 @@ public class TrackingState {
     }
 
     public void start() {
+        api.start(selectedTask);
         running = true;
     }
 
     public void pause() {
+        stop();
+    }
+
+    public void stop() {
+        api.stop(selectedTask);
         running = false;
     }
 }

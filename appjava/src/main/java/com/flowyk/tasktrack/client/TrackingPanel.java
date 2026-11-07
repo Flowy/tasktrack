@@ -1,5 +1,6 @@
 package com.flowyk.tasktrack.client;
 
+import com.flowyk.tasktrack.api.TrackingApi;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Rectangle;
@@ -17,12 +18,17 @@ import static com.flowyk.tasktrack.client.Layout.*;
 
 public final class TrackingPanel extends JPanel {
     private final Layout layout;
-    private final TrackingState state = new TrackingState();
+    private final TrackingState state;
     private final JButton timerButton = new JButton();
 
     public TrackingPanel(Layout layout) {
+        this(layout, new LocalTrackingApi());
+    }
+
+    public TrackingPanel(Layout layout, TrackingApi api) {
         super(new BorderLayout(layout.distance(Distance.TRACKING_GAP), layout.distance(Distance.VERTICAL_GAP)));
         this.layout = layout;
+        this.state = new TrackingState(api);
         setBorder(new javax.swing.border.EmptyBorder(layout.insets(Spacing.TRACKING_PADDING)));
         setPreferredSize(layout.size(Size.TRACKING_PANEL));
         JComboBox<String> taskSelector = new JComboBox<>(state.getTasks().toArray(String[]::new));
@@ -64,8 +70,8 @@ public final class TrackingPanel extends JPanel {
         taskSelector.setName(layout.text(Text.SELECTOR_NAME));
         taskSelector.setToolTipText(layout.text(Text.CHOOSE_TASK));
         taskSelector.getAccessibleContext().setAccessibleName(layout.text(Text.CHOOSE_TASK));
-        taskSelector.setSelectedItem(state.getSelectedTask());
-        taskSelector.addActionListener(_ -> state.selectTask((String) taskSelector.getSelectedItem()));
+        taskSelector.setSelectedItem(this.state.getSelectedTask());
+        taskSelector.addActionListener(_ -> this.state.selectTask((String) taskSelector.getSelectedItem()));
         add(taskSelector, BorderLayout.CENTER);
         timerButton.setFont(layout.font(Typeface.TIMER_BUTTON));
         timerButton.setMargin(layout.insets(Spacing.TIMER_MARGIN));
@@ -73,9 +79,9 @@ public final class TrackingPanel extends JPanel {
         add(timerButton, BorderLayout.EAST);
         timerButton.addActionListener(_ -> {
             if (state.isRunning()) {
-                state.pause();
+                this.state.stop();
             } else {
-                state.start();
+                this.state.start();
             }
             renderState();
         });
