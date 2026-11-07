@@ -34,7 +34,7 @@ Status: Planned
 
 ## Repeatable acceptance checks
 
-Use JUnit 4 with Maven Surefire to run Swing checks on the event dispatch thread.
+Use JUnit Jupiter with Maven Surefire to run Swing checks on the event dispatch thread.
 Tests require a graphical desktop and must fail with a clear message if headless.
 Map tests to FR-001, FR-002 configuration, FR-008, and FR-009 fresh-window state.
 Keep OS stacking/focus and process restart as manual acceptance checks.
@@ -74,3 +74,7 @@ Construct one TaskTrackLayout per window and pass it to TrackingPanel and toggle
 ## Tracking panel extraction
 
 Move the existing nested TrackingPanel unchanged into a public final client class with a public Layout constructor. Keep state, rendering, selector configuration, sizing, and event handlers together; MainWindow retains window composition. Verify with the existing state/window regression suite.
+
+## JUnit Jupiter migration
+
+Use junit-jupiter 5.12.2 (API and engine) with existing Surefire 3.2.5. Migrate all three test classes together, use BeforeEach/AfterEach, and move assertion messages to the final argument. Preserve all existing checks and graphical desktop requirements; no product behavior changes.

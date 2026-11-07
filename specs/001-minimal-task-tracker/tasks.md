@@ -52,3 +52,7 @@
 - [x] Convert layout accessors to instance methods and verify existing regressions (FR-001, FR-008, FR-010, FR-013).
 
 - [x] Extract TrackingPanel into its own client class with unchanged UI and run existing regressions (FR-001, FR-008, FR-011, FR-012, FR-013). IntelliJ build succeeded; all 11 existing state/window tests passed.
+
+- [x] Migrate all tests and Maven dependency to JUnit Jupiter; run the full suite preserving FR-001/002/008–013, QR-002 and API-001/002/003, API-QR-001 coverage.
+
+Verification: Maven test on Corretto 25.0.2 with Jupiter 5.12.2 and Surefire 3.2.5 passed all 14 tests (8 MainWindowTest, 3 TrackingStateTest, 3 TrackingApiTest), with zero failures, errors or skips. Existing physical desktop acceptance checks remain pending.

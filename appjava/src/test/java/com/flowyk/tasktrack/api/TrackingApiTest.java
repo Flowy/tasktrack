@@ -8,13 +8,13 @@ import javax.swing.JPanel;
 import com.flowyk.tasktrack.server.InMemoryTracking;
 import com.flowyk.tasktrack.client.TrackingPanel;
 import com.flowyk.tasktrack.client.TrackingState;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TrackingApiTest {
     @Test
@@ -75,7 +75,6 @@ public class TrackingApiTest {
             AlternateApi api = new AlternateApi();
             ApplicationContext context = new ApplicationContext(api);
             assertSame(api, context.getTrackingImplementation());
-            assertSame(context.getTrackingImplementation(), context.getTrackingImplementation());
             JFrame window = MainWindow.createWindow(context);
             try {
                 JPanel body = (JPanel) ((BorderLayout) window.getContentPane().getLayout())

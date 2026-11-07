@@ -17,24 +17,24 @@ import javax.swing.JFrame;
 import java.awt.Dimension;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /** Specification 001 checks; desktop stacking and focus still require manual verification. */
 public class MainWindowTest {
     private JFrame window;
     private JButton button;
 
-    @Before
+    @BeforeEach
     public void openWindow() throws Exception {
-        assertFalse("These Swing tests require a graphical desktop", GraphicsEnvironment.isHeadless());
+        assertFalse(GraphicsEnvironment.isHeadless(), "These Swing tests require a graphical desktop");
         SwingUtilities.invokeAndWait(() -> {
             window = MainWindow.createWindow(new ApplicationContext(new InMemoryTracking()));
             button = (JButton) find(window.getContentPane(), "Start timer");
-            assertNotNull("Start timer/Pause action is required", button);
+            assertNotNull(button, "Start timer/Pause action is required");
         });
     }
 
@@ -56,7 +56,7 @@ public class MainWindowTest {
         assertEquals(action, button.getAccessibleContext().getAccessibleName());
     }
 
-    @After
+    @AfterEach
     public void closeWindow() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             if (window != null) window.dispose();
@@ -108,14 +108,14 @@ public class MainWindowTest {
         SwingUtilities.invokeAndWait(() -> {
             JComboBox<?> selector = (JComboBox<?>) find(window.getContentPane(), "taskSelector");
             for (Component child : selector.getComponents()) {
-                assertFalse("Task selector has no arrow button", child instanceof JButton);
+                assertFalse(child instanceof JButton, "Task selector has no arrow button");
             }
             assertEquals(new java.awt.Insets(0, 0, 0, 0), selector.getInsets());
             window.setVisible(true);
             selector.dispatchEvent(new MouseEvent(selector, MouseEvent.MOUSE_PRESSED,
                     System.currentTimeMillis(), MouseEvent.BUTTON1_DOWN_MASK,
                     12, selector.getHeight() / 2, 1, false, MouseEvent.BUTTON1));
-            assertTrue("Clicking the task name opens its popup", selector.isPopupVisible());
+            assertTrue(selector.isPopupVisible(), "Clicking the task name opens its popup");
             selector.setPopupVisible(false);
         });
     }
@@ -137,7 +137,7 @@ public class MainWindowTest {
             assertNotNull(toggle.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke("pressed SPACE")));
             Point initialLocation = window.getLocation();
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_ENTERED, 0, 0, 10, 40, 0, false));
-            assertFalse("Hover does not reveal controls", controls.isVisible());
+            assertFalse(controls.isVisible(), "Hover does not reveal controls");
             toggle.doClick(0);
             assertEquals("⇊", toggle.getText());
             assertEquals("Hide window controls", toggle.getAccessibleContext().getAccessibleName());
@@ -146,21 +146,21 @@ public class MainWindowTest {
             assertEquals(initialLocation.y - 24, window.getY());
             assertEquals(initialLocation.y + 8, window.getY() + SwingUtilities.convertPoint(button, 0, 0, root).y);
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_EXITED, 0, 0, 120, 40, 0, false));
-            assertTrue("Moving to a child stays inside", controls.isVisible());
+            assertTrue(controls.isVisible(), "Moving to a child stays inside");
             button.dispatchEvent(new MouseEvent(button, MouseEvent.MOUSE_ENTERED, 0, 0, 2, 2, 0, false));
             assertTrue(controls.isVisible());
             Point before = window.getLocation();
             controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_PRESSED, 0, 0,
                     5, 5, 100, 100, 1, false, MouseEvent.BUTTON1));
             controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_EXITED, 0, 0, -10, -10, 0, false));
-            assertTrue("Keep controls visible while dragging", controls.isVisible());
+            assertTrue(controls.isVisible(), "Keep controls visible while dragging");
             controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_DRAGGED, 0,
                     MouseEvent.BUTTON1_DOWN_MASK, 35, 25, 130, 120, 0, false, MouseEvent.NOBUTTON));
             assertEquals(new Point(before.x + 30, before.y + 20), window.getLocation());
             controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_RELEASED, 0, 0,
                     5, 5, 130, 120, 1, false, MouseEvent.BUTTON1));
             root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_EXITED, 0, 0, -1, -1, 0, false));
-            assertTrue("Pointer exit leaves controls open", controls.isVisible());
+            assertTrue(controls.isVisible(), "Pointer exit leaves controls open");
             toggle.doClick(0);
             assertFalse(controls.isVisible());
             assertEquals("⇈", toggle.getText());
@@ -180,7 +180,7 @@ public class MainWindowTest {
                 }
             });
             ((JButton) find(root, "Close app")).doClick(0);
-            assertTrue("Close button uses normal app closing path", closing.get());
+            assertTrue(closing.get(), "Close button uses normal app closing path");
         });
     }
 
