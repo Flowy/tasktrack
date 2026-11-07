@@ -38,3 +38,11 @@ Use JUnit 4 with Maven Surefire to run Swing checks on the event dispatch thread
 Tests require a graphical desktop and must fail with a clear message if headless.
 Map tests to FR-001, FR-002 configuration, FR-008, and FR-009 fresh-window state.
 Keep OS stacking/focus and process restart as manual acceptance checks.
+
+## Task selection
+
+Use an immutable List<String> of three distinct sample task titles in TrackingState and explicit getTasks/getSelectedTask/selectTask methods. Reject values outside the fixed list. Start/Pause and selection are independent in-memory state. Bind a noneditable Swing JComboBox to this state, with an accessible name and tooltip. Use BorderLayout with an 8 pixel gap and a 280-by-48 tracking area to fit the selector and existing 40-by-32 action. Keep hover controls full width. Verify FR-011/FR-012 state invariants and Swing transitions, plus existing regressions.
+
+For FR-013, retain JComboBox state, popup, and keyboard behavior using a BasicComboBoxUI delegate without an arrow button. Remove the selector border, use the full component bounds for the current value, and use a hand cursor to indicate clickability. Verify the existing suite and popup activation from a click on the selected text.
+
+Render the closed task value transparently and suppress the combo delegate's background/focus color painting; retain the standard list renderer for popup rows (FR-013).

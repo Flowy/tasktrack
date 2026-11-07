@@ -6,11 +6,11 @@ Status: Implementing
 
 A compact Java desktop window that stays above ordinary application windows,
 with a button to start and pause. State is local to the process with no persistence.
-This scope replaces the earlier proposed task list and storage features.
+Includes static task selection; task editing and storage remain outside scope.
 
 ## Functional requirements
 
-- **FR-001:** Show a compact desktop window without the native title bar, with one small Unicode symbol button on the right, empty space on the left, and no status text.
+- **FR-001:** Show a compact desktop window without the native title bar, with one small Unicode symbol button on the right, a task selector on the left, and no status text.
 - **FR-002:** Keep the visible, non-minimized window always on top without repeatedly requesting focus.
 - **FR-008:** Initially show ▶ (start timer). Clicking it starts tracking and shows ⏸ (pause); clicking pause returns to ▶. Repeated cycles work. Tooltips and accessible names identify the current action.
 - **FR-009:** Keep running state only in memory. Closing exits the application; reopening starts stopped. Do not load or save state.
@@ -38,11 +38,11 @@ FR-003 through FR-007 are retired: the previous task CRUD and persistence propos
 
 Windows is the first verification platform, matching the current environment.
 Use a small undecorated window and a single action button aligned right. Starting changes
-only the running state; timers, task selection, and background work are not part of this request.
+only the running state; elapsed timers and background work remain outside scope.
 
 ## Out of scope
 
-Persistence, task lists, timers, network services, tray integration, installers, and additional title-bar controls beyond drag and close.
+Persistence, task editing, elapsed timers, network services, tray integration, installers, and additional title-bar controls beyond drag and close.
 
 ## Validation evidence
 
@@ -62,3 +62,24 @@ Persistence, task lists, timers, network services, tray integration, installers,
 - PASS: permanent TaskTrackAppTest suite, 5 tests, run with JUnitCore using cached JUnit 4.13.2 and the installed Java 8 JDK. Covers initial labels, repeated toggles, always-on-top configuration, Space binding, and fresh-window reset. Maven runner configured but not executed here (no Maven on PATH). See README for repeatable Maven/IntelliJ instructions.
 - PASS: after extracting UI into `com.flowyk.tasktrack.client.TaskTrackWindow`, compiled main and test sources with Java 8 and ran all five `TaskTrackWindowTest` checks using JUnitCore (FR-001, FR-002 configuration, FR-008, FR-009 fresh-window state, QR-002 binding). Desktop manual checks remain pending.
 - PASS: corrected baseline to Java 25 (QR-003). Compiled main and test sources with Corretto 25.0.2 using `--release 25`; all five `TaskTrackWindowTest` checks passed on Java 25 via JUnitCore. Earlier Java 8 entries describe historical checks only. Maven packaging remains unverified (Maven unavailable on PATH).
+
+## Task selection extension
+
+Confirmed request: populate a few static tasks in state and let the user choose one.
+
+- **FR-011:** State provides a fixed, nonempty list of sample tasks and holds the selected task in memory. The selector displays that list and updates the selected task when the user chooses another entry.
+- **FR-012:** Keep the compact always-on-top window, hover controls, and Start/Pause action available alongside task selection.
+
+Implementation defaults (non-blocking assumptions): three sample task names, first task initially selected, selection changes preserve running state, and each new window resets selection. No task CRUD, per-task timing, or persistence.
+
+Acceptance: launch shows the first task; choose each entry by the standard dropdown; selection survives Start/Pause cycles; choosing while running preserves Pause; reopening restores the first task (FR-011, FR-012). Verify state selection and invalid selections independently, and UI selection alongside the existing regression suite. Real pointer and keyboard dropdown interaction remains a manual check.
+
+- PASS (FR-011, FR-012): compiled main/test sources with Corretto 25.0.2 javac (`--release 25 -encoding UTF-8`), then ran TrackingStateTest and TaskTrackWindowTest via JUnitCore 4.13.2: all 10 checks passed. Covers immutable sample list, default/valid/invalid selections, selection independence from running state, fresh-state reset, dropdown entries and selection cycles, accessible name, layout, fresh-window reset, and existing start/pause, hover, drag, and close regressions. Actual pointer/keyboard dropdown interaction and OS stacking/focus remain manual checks.
+
+- **FR-013:** Show the selected task as clickable text without dropdown arrow or surrounding selector border; clicking the name opens the existing task popup. Preserve keyboard selection and accessible naming.
+
+- PASS (FR-013): Java 25 compilation and all 11 JUnit checks passed. New Swing check verifies no arrow button, zero border insets, and popup visibility after a synthetic left click on the task text in a visible window. Physical pointer/keyboard interaction remains a manual check.
+
+FR-013 refinement: the closed task selector displays plain text with no background fill or focus coloration. Keep normal selection highlighting inside the task popup.
+
+- PASS (FR-013 coloration refinement): Java 25 main/test compilation and all 11 existing JUnit checks pass, including task popup activation. Code review confirms transparent closed-value renderer and suppressed background/focus-color painting; visual appearance remains a manual check.

@@ -9,6 +9,7 @@ import java.awt.event.WindowEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import java.awt.Dimension;
@@ -65,13 +66,55 @@ public class TaskTrackWindowTest {
         SwingUtilities.invokeAndWait(() -> {
             assertAction("\u25B6", "Start timer");
             assertTrue(button.isVisible());
-            assertEquals(1, button.getParent().getComponentCount());
+            assertEquals(2, button.getParent().getComponentCount());
             assertEquals(new Dimension(40, 32), button.getSize());
             assertTrue(window.isUndecorated());
             assertEquals(8, window.getContentPane().getWidth() - button.getX() - button.getWidth());
-            assertTrue("Leave empty space to the left", button.getX() >= 80);
+            Component selector = find(window.getContentPane(), "taskSelector");
+            assertNotNull(selector);
+            assertTrue(selector.getWidth() > 0);
+            assertTrue(selector.getX() + selector.getWidth() < button.getX());
             assertTrue(button.getFont().canDisplay('\u25B6'));
             assertTrue(button.getFont().canDisplay('\u23F8'));
+        });
+    }
+
+    @Test
+    public void fr011AndFr012_selectTasksAlongsideStartPause() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            JComboBox<?> selector = (JComboBox<?>) find(window.getContentPane(), "taskSelector");
+            assertEquals(3, selector.getItemCount());
+            assertEquals(0, selector.getSelectedIndex());
+            assertEquals("Choose task", selector.getAccessibleContext().getAccessibleName());
+            button.doClick(0);
+            for (int index = 0; index < selector.getItemCount(); index++) {
+                selector.setSelectedIndex(index);
+                assertEquals(selector.getItemAt(index), selector.getSelectedItem());
+                assertAction("\u23F8", "Pause");
+            }
+            button.doClick(0);
+            assertEquals(2, selector.getSelectedIndex());
+            window.dispose();
+        });
+        openWindow();
+        SwingUtilities.invokeAndWait(() -> assertEquals(0,
+                ((JComboBox<?>) find(window.getContentPane(), "taskSelector")).getSelectedIndex()));
+    }
+
+    @Test
+    public void fr013_taskTextOpensPopupWithoutArrow() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            JComboBox<?> selector = (JComboBox<?>) find(window.getContentPane(), "taskSelector");
+            for (Component child : selector.getComponents()) {
+                assertFalse("Task selector has no arrow button", child instanceof JButton);
+            }
+            assertEquals(new java.awt.Insets(0, 0, 0, 0), selector.getInsets());
+            window.setVisible(true);
+            selector.dispatchEvent(new MouseEvent(selector, MouseEvent.MOUSE_PRESSED,
+                    System.currentTimeMillis(), MouseEvent.BUTTON1_DOWN_MASK,
+                    12, selector.getHeight() / 2, 1, false, MouseEvent.BUTTON1));
+            assertTrue("Clicking the task name opens its popup", selector.isPopupVisible());
+            selector.setPopupVisible(false);
         });
     }
 

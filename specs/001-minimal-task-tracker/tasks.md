@@ -28,3 +28,11 @@
 - [ ] Manually verify stacking, focus, keyboard activation, and restart behavior on the desktop.
 
 - [x] Add and run permanent automated acceptance checks with requirement references; document execution and coverage limits.
+
+- [x] Add static tasks and validated selected-task state (FR-011); verify defaults, valid/invalid selections, running-state independence, and instance reset.
+- [x] Add accessible dropdown beside Start/Pause (FR-011, FR-012), update layout assertions and README, and run the state/window regression suite.
+- [x] Record verification evidence and remaining manual dropdown checks (FR-011, FR-012).
+
+- [x] Remove task selector arrow/border while preserving clickable text and popup (FR-013). Verify popup activation and run existing regression checks.
+
+- [x] Remove closed-selector background and focus coloration (FR-013); compile and run existing checks.

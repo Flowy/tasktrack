@@ -1,12 +1,12 @@
 # TaskTrack
 
 A minimal Java desktop window that stays above ordinary application windows.
-The window has no title bar, with empty space on the left and the button on the right.
+The window has no title bar, with a task dropdown on the left and Start/Pause on the right.
 On Windows, focus the window and press Alt+F4 to close it.
 Hover over the window to reveal the top panel. Drag its empty area to move the
 window, or click **×** to close the app. The panel hides when the pointer leaves.
 Use the small **▶** button to start and **⏸** to pause. Hover for the action name.
-State lives only in memory and resets when the application closes. There is no timer or persistence.
+Choose from three sample tasks in the dropdown. The first task is selected initially; switching tasks preserves Start/Pause state. Task selection and running state live only in memory and reset when the application closes. There is no timer or persistence.
 
 ## Run
 
