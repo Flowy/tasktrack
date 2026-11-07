@@ -1,11 +1,17 @@
 package com.flowyk.tasktrack.client;
 
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import java.awt.Dimension;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import org.junit.After;
@@ -17,7 +23,6 @@ import static org.junit.Assert.*;
 /** Specification 001 checks; desktop stacking and focus still require manual verification. */
 public class TaskTrackWindowTest {
     private JFrame window;
-    private JLabel status;
     private JButton button;
 
     @Before
@@ -25,13 +30,27 @@ public class TaskTrackWindowTest {
         assertFalse("These Swing tests require a graphical desktop", GraphicsEnvironment.isHeadless());
         SwingUtilities.invokeAndWait(() -> {
             window = TaskTrackWindow.createWindow();
-            for (Component component : window.getContentPane().getComponents()) {
-                if (component instanceof JLabel) status = (JLabel) component;
-                if (component instanceof JButton) button = (JButton) component;
-            }
-            assertNotNull("Visible status is required", status);
+            button = (JButton) find(window.getContentPane(), "Start timer");
             assertNotNull("Start timer/Pause action is required", button);
         });
+    }
+
+    private Component find(Component component, String name) {
+        if (name.equals(component.getName()) || (component instanceof JButton candidate
+                && name.equals(candidate.getAccessibleContext().getAccessibleName()))) return component;
+        if (component instanceof Container container) {
+            for (Component child : container.getComponents()) {
+                Component found = find(child, name);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+
+    private void assertAction(String symbol, String action) {
+        assertEquals(symbol, button.getText());
+        assertEquals(action, button.getToolTipText());
+        assertEquals(action, button.getAccessibleContext().getAccessibleName());
     }
 
     @After
@@ -44,10 +63,64 @@ public class TaskTrackWindowTest {
     @Test
     public void fr001AndFr008_launchStopped() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
-            assertEquals("Stopped", status.getText());
-            assertEquals("Start timer", button.getText());
-            assertTrue(status.isVisible());
+            assertAction("\u25B6", "Start timer");
             assertTrue(button.isVisible());
+            assertEquals(1, button.getParent().getComponentCount());
+            assertEquals(new Dimension(40, 32), button.getSize());
+            assertTrue(window.isUndecorated());
+            assertEquals(8, window.getContentPane().getWidth() - button.getX() - button.getWidth());
+            assertTrue("Leave empty space to the left", button.getX() >= 80);
+            assertTrue(button.getFont().canDisplay('\u25B6'));
+            assertTrue(button.getFont().canDisplay('\u23F8'));
+        });
+    }
+
+    @Test
+    public void fr010_hoverDragAndClose() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            Component root = window.getContentPane();
+            Component controls = find(root, "windowControls");
+            assertNotNull(controls);
+            assertEquals(java.awt.Cursor.MOVE_CURSOR, controls.getCursor().getType());
+            assertEquals(java.awt.Cursor.DEFAULT_CURSOR, find(root, "Close app").getCursor().getType());
+            assertFalse(controls.isVisible());
+            assertEquals(48, window.getHeight());
+            Point initialLocation = window.getLocation();
+            root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_ENTERED, 0, 0, 10, 40, 0, false));
+            assertTrue(controls.isVisible());
+            assertEquals(72, window.getHeight());
+            assertEquals(initialLocation.y - 24, window.getY());
+            assertEquals(initialLocation.y + 8, window.getY() + button.getParent().getY() + button.getY());
+            root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_EXITED, 0, 0, 120, 40, 0, false));
+            assertTrue("Moving to a child stays inside", controls.isVisible());
+            button.dispatchEvent(new MouseEvent(button, MouseEvent.MOUSE_ENTERED, 0, 0, 2, 2, 0, false));
+            assertTrue(controls.isVisible());
+            Point before = window.getLocation();
+            controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_PRESSED, 0, 0,
+                    5, 5, 100, 100, 1, false, MouseEvent.BUTTON1));
+            controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_EXITED, 0, 0, -10, -10, 0, false));
+            assertTrue("Keep controls visible while dragging", controls.isVisible());
+            controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_DRAGGED, 0,
+                    MouseEvent.BUTTON1_DOWN_MASK, 35, 25, 130, 120, 0, false, MouseEvent.NOBUTTON));
+            assertEquals(new Point(before.x + 30, before.y + 20), window.getLocation());
+            controls.dispatchEvent(new MouseEvent(controls, MouseEvent.MOUSE_RELEASED, 0, 0,
+                    5, 5, 130, 120, 1, false, MouseEvent.BUTTON1));
+            root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_EXITED, 0, 0, -1, -1, 0, false));
+            assertFalse(controls.isVisible());
+            assertEquals(48, window.getHeight());
+            assertEquals(new Point(initialLocation.x + 30, initialLocation.y + 20), window.getLocation());
+            root.dispatchEvent(new MouseEvent(root, MouseEvent.MOUSE_ENTERED, 0, 0, 5, 5, 0, false));
+            assertTrue(controls.isVisible());
+            AtomicBoolean closing = new AtomicBoolean();
+            window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            window.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent event) {
+                    closing.set(true);
+                }
+            });
+            ((JButton) find(root, "Close app")).doClick(0);
+            assertTrue("Close button uses normal app closing path", closing.get());
         });
     }
 
@@ -61,11 +134,9 @@ public class TaskTrackWindowTest {
         SwingUtilities.invokeAndWait(() -> {
             for (int cycle = 0; cycle < 5; cycle++) {
                 button.doClick(0);
-                assertEquals("Running", status.getText());
-                assertEquals("Pause", button.getText());
+                assertAction("\u23F8", "Pause");
                 button.doClick(0);
-                assertEquals("Stopped", status.getText());
-                assertEquals("Start timer", button.getText());
+                assertAction("\u25B6", "Start timer");
             }
         });
     }
@@ -84,14 +155,12 @@ public class TaskTrackWindowTest {
     public void fr009_newWindowStartsStoppedAfterRunningWindowCloses() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             button.doClick(0);
-            assertEquals("Running", status.getText());
             assertEquals(JFrame.EXIT_ON_CLOSE, window.getDefaultCloseOperation());
             window.dispose();
         });
         openWindow();
         SwingUtilities.invokeAndWait(() -> {
-            assertEquals("Stopped", status.getText());
-            assertEquals("Start timer", button.getText());
+            assertAction("\u25B6", "Start timer");
         });
     }
 }

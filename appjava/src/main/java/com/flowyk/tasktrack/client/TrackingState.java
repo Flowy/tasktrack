@@ -1,4 +1,4 @@
-package com.flowyk.tasktrack.state;
+package com.flowyk.tasktrack.client;
 
 /** In-memory tracking state, initially stopped. */
 public final class TrackingState {

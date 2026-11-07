@@ -1,5 +1,6 @@
 package com.flowyk.tasktrack.state;
 
+import com.flowyk.tasktrack.client.TrackingState;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

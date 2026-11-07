@@ -1,14 +1,22 @@
 package com.flowyk.tasktrack.client;
 
-import com.flowyk.tasktrack.state.TrackingState;
+import java.awt.FlowLayout;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public final class TaskTrackWindow {
     private TaskTrackWindow() {
@@ -16,26 +24,115 @@ public final class TaskTrackWindow {
 
     public static JFrame createWindow() {
         JFrame window = new JFrame("TaskTrack");
+        window.setUndecorated(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setAlwaysOnTop(true);
-        window.setContentPane(new TrackingPanel());
+        window.setContentPane(new WindowPanel(window));
         window.setResizable(false);
         window.pack();
         window.setLocationRelativeTo(null);
         return window;
     }
 
+    private static final class WindowPanel extends JPanel {
+        private final JPanel controls = new JPanel(new BorderLayout());
+        private final JFrame window;
+        private Point dragOrigin;
+        private Point windowOrigin;
+
+        private WindowPanel(JFrame window) {
+            super(new BorderLayout());
+            this.window = window;
+            controls.setPreferredSize(new Dimension(160, 24));
+            controls.setName("windowControls");
+            controls.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            JButton close = new JButton("×");
+            close.setToolTipText("Close app");
+            close.setCursor(Cursor.getDefaultCursor());
+            close.getAccessibleContext().setAccessibleName("Close app");
+            close.setMargin(new Insets(0, 4, 0, 4));
+            close.setPreferredSize(new Dimension(24, 24));
+            close.addActionListener(_ -> window.dispatchEvent(
+                    new WindowEvent(window, WindowEvent.WINDOW_CLOSING)));
+            controls.add(close, BorderLayout.EAST);
+            add(controls, BorderLayout.NORTH);
+            add(new TrackingPanel(), BorderLayout.CENTER);
+
+            MouseAdapter drag = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent event) {
+                    if (SwingUtilities.isLeftMouseButton(event)) {
+                        dragOrigin = event.getLocationOnScreen();
+                        windowOrigin = window.getLocation();
+                    }
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent event) {
+                    if (dragOrigin != null) {
+                        window.setLocation(windowOrigin.x + event.getXOnScreen() - dragOrigin.x,
+                                windowOrigin.y + event.getYOnScreen() - dragOrigin.y);
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent event) {
+                    dragOrigin = null;
+                    updateHover(event);
+                }
+            };
+            controls.addMouseListener(drag);
+            controls.addMouseMotionListener(drag);
+            installHover(this, new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent event) {
+                    setControlsVisible(true);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent event) {
+                    updateHover(event);
+                }
+            });
+            controls.setVisible(false);
+        }
+
+        private void updateHover(MouseEvent event) {
+            Point point = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), this);
+            setControlsVisible(dragOrigin != null || contains(point));
+        }
+
+        private void setControlsVisible(boolean visible) {
+            if (controls.isVisible() == visible) return;
+            int oldHeight = window.getHeight();
+            Point location = window.getLocation();
+            controls.setVisible(visible);
+            window.pack();
+            window.setLocation(location.x, location.y + oldHeight - window.getHeight());
+        }
+
+        private static void installHover(Component component, MouseAdapter listener) {
+            component.addMouseListener(listener);
+            if (component instanceof Container container) {
+                for (Component child : container.getComponents()) {
+                    installHover(child, listener);
+                }
+            }
+        }
+    }
+
     private static final class TrackingPanel extends JPanel {
         private final TrackingState state = new TrackingState();
-        private final JLabel status = new JLabel("Stopped", SwingConstants.CENTER);
-        private final JButton timerButton = new JButton("Start timer");
+        private final JButton timerButton = new JButton();
 
         private TrackingPanel() {
-            super(new BorderLayout(0, 12));
-            setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
-            setPreferredSize(new Dimension(240, 120));
-            add(status, BorderLayout.CENTER);
-            add(timerButton, BorderLayout.SOUTH);
+            super(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+            setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+            setPreferredSize(new Dimension(160, 48));
+            timerButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 16));
+            timerButton.setMargin(new Insets(2, 4, 2, 4));
+            timerButton.setPreferredSize(new Dimension(40, 32));
+            add(timerButton);
             timerButton.addActionListener(_ -> {
                 if (state.isRunning()) {
                     state.pause();
@@ -48,8 +145,10 @@ public final class TaskTrackWindow {
         }
 
         private void renderState() {
-            status.setText(state.isRunning() ? "Running" : "Stopped");
-            timerButton.setText(state.isRunning() ? "Pause" : "Start timer");
+            timerButton.setText(state.isRunning() ? "⏸" : "▶");
+            String action = state.isRunning() ? "Pause" : "Start timer";
+            timerButton.setToolTipText(action);
+            timerButton.getAccessibleContext().setAccessibleName(action);
         }
     }
 }

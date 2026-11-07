@@ -1,7 +1,11 @@
 # TaskTrack
 
 A minimal Java desktop window that stays above ordinary application windows.
-Click **Start timer** to switch to Running; click **Pause** to return to Stopped.
+The window has no title bar, with empty space on the left and the button on the right.
+On Windows, focus the window and press Alt+F4 to close it.
+Hover over the window to reveal the top panel. Drag its empty area to move the
+window, or click **×** to close the app. The panel hides when the pointer leaves.
+Use the small **▶** button to start and **⏸** to pause. Hover for the action name.
 State lives only in memory and resets when the application closes. There is no timer or persistence.
 
 ## Run
@@ -56,7 +60,8 @@ Maven writes test results to `appjava/target/surefire-reports/` and returns a
 nonzero exit code on failure. Tests need a graphical desktop; they do not show
 windows or send real keyboard/mouse input.
 
-The five checks cover initial status, repeated Start timer/Pause transitions,
+The window checks cover hover controls, dragging, close-event dispatch,
+the compact symbol button, repeated start/pause transitions,
 always-on-top configuration, Space activation binding, and fresh-window state.
 They reference requirement IDs in their names. Markdown requirements are not
 executed directly: these tests encode the observable checks from the spec.
