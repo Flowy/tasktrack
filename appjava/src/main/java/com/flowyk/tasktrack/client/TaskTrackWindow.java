@@ -36,7 +36,7 @@ public final class TaskTrackWindow {
             setPreferredSize(new Dimension(240, 120));
             add(status, BorderLayout.CENTER);
             add(timerButton, BorderLayout.SOUTH);
-            timerButton.addActionListener(event -> {
+            timerButton.addActionListener(_ -> {
                 if (state.isRunning()) {
                     state.pause();
                 } else {

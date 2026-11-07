@@ -7,7 +7,7 @@ public final class TaskTrackApp {
     private TaskTrackApp() {
     }
 
-    public static void main(String[] args) {
+    static void main() {
         SwingUtilities.invokeLater(() -> TaskTrackWindow.createWindow().setVisible(true));
     }
 }
