@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import javax.swing.BorderFactory;
@@ -17,33 +15,36 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 
-public final class TaskTrackWindow {
-    private TaskTrackWindow() {
+import static com.flowyk.tasktrack.client.Layout.*;
+
+public final class MainWindow {
+    private MainWindow() {
     }
 
     public static JFrame createWindow() {
-        JFrame window = new JFrame("TaskTrack");
+        Layout layout = new Layout();
+        JFrame window = new JFrame(layout.text(Text.WINDOW_TITLE));
         window.setUndecorated(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setAlwaysOnTop(true);
         JPanel root = new JPanel(new BorderLayout());
         ManipulationPanel controls = new ManipulationPanel(new WindowController(window));
         JButton toggle = new JButton();
-        toggle.setName("toggleWindowControls");
-        toggle.setPreferredSize(new Dimension(24, 24));
-        toggle.setMargin(new Insets(0, 0, 0, 0));
-        updateToggleAction(toggle, false);
+        toggle.setName(layout.text(Text.TOGGLE_NAME));
+        toggle.setPreferredSize(layout.size(Size.TOGGLE));
+        toggle.setMargin(layout.insets(Spacing.TOGGLE_MARGIN));
+        updateToggleAction(layout, toggle, false);
         toggle.addActionListener(_ -> {
             int oldHeight = window.getHeight();
             Point location = window.getLocation();
             controls.setVisible(!controls.isVisible());
-            updateToggleAction(toggle, controls.isVisible());
+            updateToggleAction(layout, toggle, controls.isVisible());
             window.pack();
             window.setLocation(location.x, location.y + oldHeight - window.getHeight());
         });
         JPanel body = new JPanel(new BorderLayout());
         body.add(toggle, BorderLayout.WEST);
-        body.add(new TrackingPanel(), BorderLayout.CENTER);
+        body.add(new TrackingPanel(layout), BorderLayout.CENTER);
         root.add(controls, BorderLayout.NORTH);
         root.add(body, BorderLayout.CENTER);
         window.setContentPane(root);
@@ -53,21 +54,23 @@ public final class TaskTrackWindow {
         return window;
     }
 
-    private static void updateToggleAction(JButton toggle, boolean visible) {
-        String action = visible ? "Hide window controls" : "Show window controls";
-        toggle.setText(visible ? "\u21CA" : "\u21C8");
+    private static void updateToggleAction(Layout layout, JButton toggle, boolean visible) {
+        String action = layout.text(visible ? Text.HIDE_CONTROLS : Text.SHOW_CONTROLS);
+        toggle.setText(layout.text(visible ? Text.HIDE_SYMBOL : Text.SHOW_SYMBOL));
         toggle.setToolTipText(action);
         toggle.getAccessibleContext().setAccessibleName(action);
     }
 
     private static final class TrackingPanel extends JPanel {
+        private final Layout layout;
         private final TrackingState state = new TrackingState();
         private final JButton timerButton = new JButton();
 
-        private TrackingPanel() {
-            super(new BorderLayout(8, 0));
-            setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-            setPreferredSize(new Dimension(280, 48));
+        private TrackingPanel(Layout layout) {
+            super(new BorderLayout(layout.distance(Distance.TRACKING_GAP), layout.distance(Distance.VERTICAL_GAP)));
+            this.layout = layout;
+            setBorder(new javax.swing.border.EmptyBorder(layout.insets(Spacing.TRACKING_PADDING)));
+            setPreferredSize(layout.size(Size.TRACKING_PANEL));
             JComboBox<String> taskSelector = new JComboBox<>(state.getTasks().toArray(String[]::new));
             taskSelector.setUI(new BasicComboBoxUI() {
                 @Override
@@ -104,15 +107,15 @@ public final class TaskTrackWindow {
             taskSelector.setBorder(BorderFactory.createEmptyBorder());
             taskSelector.setBackground(getBackground());
             taskSelector.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            taskSelector.setName("taskSelector");
-            taskSelector.setToolTipText("Choose task");
-            taskSelector.getAccessibleContext().setAccessibleName("Choose task");
+            taskSelector.setName(layout.text(Text.SELECTOR_NAME));
+            taskSelector.setToolTipText(layout.text(Text.CHOOSE_TASK));
+            taskSelector.getAccessibleContext().setAccessibleName(layout.text(Text.CHOOSE_TASK));
             taskSelector.setSelectedItem(state.getSelectedTask());
             taskSelector.addActionListener(_ -> state.selectTask((String) taskSelector.getSelectedItem()));
             add(taskSelector, BorderLayout.CENTER);
-            timerButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 16));
-            timerButton.setMargin(new Insets(2, 4, 2, 4));
-            timerButton.setPreferredSize(new Dimension(40, 32));
+            timerButton.setFont(layout.font(Typeface.TIMER_BUTTON));
+            timerButton.setMargin(layout.insets(Spacing.TIMER_MARGIN));
+            timerButton.setPreferredSize(layout.size(Size.TIMER_BUTTON));
             add(timerButton, BorderLayout.EAST);
             timerButton.addActionListener(_ -> {
                 if (state.isRunning()) {
@@ -126,8 +129,8 @@ public final class TaskTrackWindow {
         }
 
         private void renderState() {
-            timerButton.setText(state.isRunning() ? "⏸" : "▶");
-            String action = state.isRunning() ? "Pause" : "Start timer";
+            timerButton.setText(layout.text(state.isRunning() ? Text.PAUSE_SYMBOL : Text.START_SYMBOL));
+            String action = layout.text(state.isRunning() ? Text.PAUSE : Text.START_TIMER);
             timerButton.setToolTipText(action);
             timerButton.getAccessibleContext().setAccessibleName(action);
         }

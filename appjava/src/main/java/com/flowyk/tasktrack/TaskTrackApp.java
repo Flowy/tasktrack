@@ -1,6 +1,6 @@
 package com.flowyk.tasktrack;
 
-import com.flowyk.tasktrack.client.TaskTrackWindow;
+import com.flowyk.tasktrack.client.MainWindow;
 import javax.swing.SwingUtilities;
 
 public final class TaskTrackApp {
@@ -8,6 +8,6 @@ public final class TaskTrackApp {
     }
 
     static void main() {
-        SwingUtilities.invokeLater(() -> TaskTrackWindow.createWindow().setVisible(true));
+        SwingUtilities.invokeLater(() -> MainWindow.createWindow().setVisible(true));
     }
 }

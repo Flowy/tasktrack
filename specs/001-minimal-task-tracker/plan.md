@@ -64,3 +64,9 @@ Make ManipulationPanel a standalone drag/close panel accepting only JFrame. Move
 Introduce WindowController holding JFrame and drag origins, with close(), startDrag(Point), dragTo(Point), and endDrag(). ManipulationPanel translates left-button mouse events into controller calls. TaskTrackWindow constructs and injects the controller. Retain existing layout/toggle responsibility and verify FR-010 regressions.
 
 Use Unicode U+21C8/U+21CA double arrows for the settings toggle (up to expand above, down to collapse); retain accessible actions and verify symbols in the existing FR-010 check.
+
+## Layout holder
+
+Introduce TaskTrackLayout with enum handles and typed text, distance, size, insets, and font accessors. Return fresh mutable AWT values to avoid shared mutation. Move presentation values and component names from TaskTrackWindow; retain Swing layout constraints and behavior there. Verify using the existing state/window suite.
+
+Construct one TaskTrackLayout per window and pass it to TrackingPanel and toggle rendering; expose a public constructor and non-static typed accessors.

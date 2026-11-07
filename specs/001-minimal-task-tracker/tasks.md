@@ -46,3 +46,7 @@
 - [x] Extract WindowController with close/drag operations, inject into ManipulationPanel and run existing regression checks (FR-010).
 
 - [x] Replace settings toggle plus/minus with double up/down arrows and verify FR-010 and regression suite.
+
+- [x] Extract TaskTrackWindow presentation values into a typed layout holder and run existing regressions (FR-001, FR-008, FR-010, FR-013).
+
+- [x] Convert layout accessors to instance methods and verify existing regressions (FR-001, FR-008, FR-010, FR-013).

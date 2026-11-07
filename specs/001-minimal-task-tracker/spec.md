@@ -60,8 +60,8 @@ Persistence, task editing, elapsed timers, network services, tray integration, i
 - Pending: manual desktop stacking/focus, actual keyboard activation, and full process restart checks. Feature remains Implementing until those acceptance checks are recorded.
 
 - PASS: permanent TaskTrackAppTest suite, 5 tests, run with JUnitCore using cached JUnit 4.13.2 and the installed Java 8 JDK. Covers initial labels, repeated toggles, always-on-top configuration, Space binding, and fresh-window reset. Maven runner configured but not executed here (no Maven on PATH). See README for repeatable Maven/IntelliJ instructions.
-- PASS: after extracting UI into `com.flowyk.tasktrack.client.TaskTrackWindow`, compiled main and test sources with Java 8 and ran all five `TaskTrackWindowTest` checks using JUnitCore (FR-001, FR-002 configuration, FR-008, FR-009 fresh-window state, QR-002 binding). Desktop manual checks remain pending.
-- PASS: corrected baseline to Java 25 (QR-003). Compiled main and test sources with Corretto 25.0.2 using `--release 25`; all five `TaskTrackWindowTest` checks passed on Java 25 via JUnitCore. Earlier Java 8 entries describe historical checks only. Maven packaging remains unverified (Maven unavailable on PATH).
+- PASS: after extracting UI into `com.flowyk.tasktrack.client.TaskTrackWindow`, compiled main and test sources with Java 8 and ran all five `MainWindowTest` checks using JUnitCore (FR-001, FR-002 configuration, FR-008, FR-009 fresh-window state, QR-002 binding). Desktop manual checks remain pending.
+- PASS: corrected baseline to Java 25 (QR-003). Compiled main and test sources with Corretto 25.0.2 using `--release 25`; all five `MainWindowTest` checks passed on Java 25 via JUnitCore. Earlier Java 8 entries describe historical checks only. Maven packaging remains unverified (Maven unavailable on PATH).
 
 ## Task selection extension
 
@@ -103,3 +103,11 @@ Confirmed structural refinement: a custom controller holds the window and provid
 FR-010 visual refinement: use an upward double arrow to show the manipulation panel and a downward double arrow to hide it. Preserve action tooltips and accessible names.
 
 - PASS (FR-010 double arrows): Java 25 compilation and all 11 JUnit checks passed, including up/down toggle symbol assertions before expansion, after expansion and after collapse. Visual desktop appearance remains unverified.
+
+## Layout holder extraction
+
+Confirmed request: move all distances and text from TaskTrackWindow into a layout holder with named handles and separate accessors for each return type. Preserve existing presentation and behavior (FR-001, FR-008, FR-010, FR-013).
+Verification: Java 25 UTF-8 main/test compilation and all 11 existing JUnit checks passed after layout holder extraction (FR-001, FR-008, FR-010, FR-013). Physical desktop appearance remains unverified.
+
+Layout holder refinement: typed accessors are instance methods. Each window shares its holder with its tracking panel.
+Verification: instance accessor refinement compiled with Java 25; all 11 existing JUnit checks passed (FR-001, FR-008, FR-010, FR-013).

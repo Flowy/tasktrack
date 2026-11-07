@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /** Specification 001 checks; desktop stacking and focus still require manual verification. */
-public class TaskTrackWindowTest {
+public class MainWindowTest {
     private JFrame window;
     private JButton button;
 
@@ -30,7 +30,7 @@ public class TaskTrackWindowTest {
     public void openWindow() throws Exception {
         assertFalse("These Swing tests require a graphical desktop", GraphicsEnvironment.isHeadless());
         SwingUtilities.invokeAndWait(() -> {
-            window = TaskTrackWindow.createWindow();
+            window = MainWindow.createWindow();
             button = (JButton) find(window.getContentPane(), "Start timer");
             assertNotNull("Start timer/Pause action is required", button);
         });
