@@ -21,10 +21,6 @@ public final class TrackingPanel extends JPanel {
     private final TrackingState state;
     private final JButton timerButton = new JButton();
 
-    public TrackingPanel(Layout layout) {
-        this(layout, new LocalTrackingApi());
-    }
-
     public TrackingPanel(Layout layout, TrackingApi api) {
         super(new BorderLayout(layout.distance(Distance.TRACKING_GAP), layout.distance(Distance.VERTICAL_GAP)));
         this.layout = layout;

@@ -45,9 +45,10 @@ with technical decisions in its [plan](specs/001-minimal-task-tracker/plan.md).
 
 The `com.flowyk.tasktrack.api.TrackingApi` interface exposes `getTasks()`,
 `start(String task)`, and `stop(String task)`.
-`LocalTrackingApi` supplies the local implementation. `TrackingState` holds client selection and running state
+`ApplicationContext` in `.api` holds injected API dependencies; `TaskTrackApp` constructs the local implementation. `TrackingState` holds client selection and running state
 and sends the selected task with each start/stop call. To supply another implementation,
-use `new TrackingPanel(layout, api)`. Calls are synchronous on the Swing event
+supply it to `new ApplicationContext(api)`. `TaskTrackApp` passes the full context through
+`MainWindow.createWindow(context)` to the tracking client. Calls are synchronous on the Swing event
 dispatch thread. Stop preserves the selected task and matches the Pause button.
 See [002 - Tracking API](specs/002-tracking-api/spec.md).
 

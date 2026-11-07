@@ -1,7 +1,11 @@
 package com.flowyk.tasktrack.api;
 
-import com.flowyk.tasktrack.client.Layout;
-import com.flowyk.tasktrack.client.LocalTrackingApi;
+import com.flowyk.tasktrack.client.MainWindow;
+import java.awt.BorderLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import com.flowyk.tasktrack.server.InMemoryTracking;
 import com.flowyk.tasktrack.client.TrackingPanel;
 import com.flowyk.tasktrack.client.TrackingState;
 import org.junit.Test;
@@ -41,9 +45,8 @@ public class TrackingApiTest {
 
     @Test
     public void api001_api002_commandContract() {
-        TrackingApi api = new LocalTrackingApi();
+        TrackingApi api = new ApplicationContext(new InMemoryTracking()).getTrackingImplementation();
         assertFalse(api.getTasks().isEmpty());
-        //noinspection DataFlowIssue
         assertThrows(UnsupportedOperationException.class, () -> api.getTasks().clear());
         for (String task : api.getTasks()) {
             api.stop(task);
@@ -70,25 +73,36 @@ public class TrackingApiTest {
                 public void stop(String task) { commands.add("stop:" + task); }
             }
             AlternateApi api = new AlternateApi();
-            TrackingPanel panel = new TrackingPanel(new Layout(), api);
-            JComboBox<?> selector = (JComboBox<?>) panel.getComponent(0);
-            JButton button = (JButton) panel.getComponent(1);
-            assertEquals(2, selector.getItemCount());
-            assertEquals("First", selector.getSelectedItem());
-            selector.setSelectedIndex(1);
-            assertTrue(api.commands.isEmpty());
-            button.doClick();
-            assertEquals(List.of("start:Second"), api.commands);
-            assertEquals("Pause", button.getToolTipText());
-            selector.setSelectedIndex(0);
-            assertEquals(1, api.commands.size());
-            assertEquals("Pause", button.getToolTipText());
-            button.doClick();
-            assertEquals(List.of("start:Second", "stop:First"), api.commands);
-            assertEquals("Start timer", button.getToolTipText());
-            button.doClick();
-            assertEquals(List.of("start:Second", "stop:First", "start:First"), api.commands);
-            assertEquals("Pause", button.getToolTipText());
+            ApplicationContext context = new ApplicationContext(api);
+            assertSame(api, context.getTrackingImplementation());
+            assertSame(context.getTrackingImplementation(), context.getTrackingImplementation());
+            JFrame window = MainWindow.createWindow(context);
+            try {
+                JPanel body = (JPanel) ((BorderLayout) window.getContentPane().getLayout())
+                        .getLayoutComponent(BorderLayout.CENTER);
+                TrackingPanel panel = (TrackingPanel) ((BorderLayout) body.getLayout())
+                        .getLayoutComponent(BorderLayout.CENTER);
+                JComboBox<?> selector = (JComboBox<?>) panel.getComponent(0);
+                JButton button = (JButton) panel.getComponent(1);
+                assertEquals(2, selector.getItemCount());
+                assertEquals("First", selector.getSelectedItem());
+                selector.setSelectedIndex(1);
+                assertTrue(api.commands.isEmpty());
+                button.doClick();
+                assertEquals(List.of("start:Second"), api.commands);
+                assertEquals("Pause", button.getToolTipText());
+                selector.setSelectedIndex(0);
+                assertEquals(1, api.commands.size());
+                assertEquals("Pause", button.getToolTipText());
+                button.doClick();
+                assertEquals(List.of("start:Second", "stop:First"), api.commands);
+                assertEquals("Start timer", button.getToolTipText());
+                button.doClick();
+                assertEquals(List.of("start:Second", "stop:First", "start:First"), api.commands);
+                assertEquals("Pause", button.getToolTipText());
+                } finally {
+                window.dispose();
+            }
         });
     }
 }

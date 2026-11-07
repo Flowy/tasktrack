@@ -1,6 +1,8 @@
 package com.flowyk.tasktrack.state;
 
 import com.flowyk.tasktrack.client.TrackingState;
+import com.flowyk.tasktrack.api.ApplicationContext;
+import com.flowyk.tasktrack.server.InMemoryTracking;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -8,7 +10,7 @@ import static org.junit.Assert.*;
 public class TrackingStateTest {
     @Test
     public void fr011_selectionIsValidatedAndIndependentOfRunningState() {
-        TrackingState state = new TrackingState();
+        TrackingState state = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
         assertEquals(3, state.getTasks().size());
         assertEquals(state.getTasks().getFirst(), state.getSelectedTask());
         state.start();
@@ -24,13 +26,13 @@ public class TrackingStateTest {
         assertThrows(UnsupportedOperationException.class, () -> state.getTasks().clear());
         state.pause();
         assertEquals(selected, state.getSelectedTask());
-        TrackingState fresh = new TrackingState();
+        TrackingState fresh = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
         assertEquals(fresh.getTasks().getFirst(), fresh.getSelectedTask());
     }
 
     @Test
     public void fr008_initiallyStoppedAndStartsAndPausesRepeatedly() {
-        TrackingState state = new TrackingState();
+        TrackingState state = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
         assertFalse(state.isRunning());
         for (int cycle = 0; cycle < 5; cycle++) {
             state.start();
@@ -44,9 +46,9 @@ public class TrackingStateTest {
 
     @Test
     public void fr009_newStateStartsStoppedIndependently() {
-        TrackingState first = new TrackingState();
+        TrackingState first = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
         first.start();
-        TrackingState second = new TrackingState();
+        TrackingState second = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
         assertFalse(second.isRunning());
         assertTrue(first.isRunning());
     }

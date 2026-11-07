@@ -9,10 +9,6 @@ public class TrackingState {
     private String selectedTask;
     private boolean running;
 
-    public TrackingState() {
-        this(new LocalTrackingApi());
-    }
-
     public TrackingState(TrackingApi api) {
         this.api = Objects.requireNonNull(api, "api");
         selectedTask = api.getTasks().getFirst();

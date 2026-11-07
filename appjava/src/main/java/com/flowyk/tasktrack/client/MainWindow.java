@@ -1,5 +1,6 @@
 package com.flowyk.tasktrack.client;
 
+import com.flowyk.tasktrack.api.ApplicationContext;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import javax.swing.JButton;
@@ -12,7 +13,7 @@ public final class MainWindow {
     private MainWindow() {
     }
 
-    public static JFrame createWindow() {
+    public static JFrame createWindow(ApplicationContext context) {
         Layout layout = new Layout();
         JFrame window = new JFrame(layout.text(Text.WINDOW_TITLE));
         window.setUndecorated(true);
@@ -35,7 +36,7 @@ public final class MainWindow {
         });
         JPanel body = new JPanel(new BorderLayout());
         body.add(toggle, BorderLayout.WEST);
-        body.add(new TrackingPanel(layout), BorderLayout.CENTER);
+        body.add(new TrackingPanel(layout, context.getTrackingImplementation()), BorderLayout.CENTER);
         root.add(controls, BorderLayout.NORTH);
         root.add(body, BorderLayout.CENTER);
         window.setContentPane(root);

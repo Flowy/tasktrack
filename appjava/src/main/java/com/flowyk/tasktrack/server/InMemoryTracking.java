@@ -1,9 +1,9 @@
-package com.flowyk.tasktrack.client;
+package com.flowyk.tasktrack.server;
 
 import com.flowyk.tasktrack.api.TrackingApi;
 import java.util.List;
 
-public final class LocalTrackingApi implements TrackingApi {
+public final class InMemoryTracking implements TrackingApi {
     private final List<String> tasks = List.of("Plan the day", "Implement task selection", "Review changes");
 
     @Override
