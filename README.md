@@ -17,15 +17,16 @@ With JDK 25 and Maven installed:
 
 ```powershell
 mvn -f appjava/pom.xml clean package
-java -jar appjava/target/appjava-1.0-SNAPSHOT.jar
+$modulePath = (@('api','client','server','app') | ForEach-Object {
+    "appjava/$_/target/tasktrack-$_-1.0-SNAPSHOT.jar"
+}) -join [IO.Path]::PathSeparator
+java --module-path $modulePath --module tasktrack.app/com.flowyk.tasktrack.TaskTrackApp
 ```
 
-Without Maven, from the repository root:
+Module boundaries can be checked after building (JDK 25 on PATH):
 
 ```powershell
-New-Item -ItemType Directory -Force appjava/target/classes | Out-Null
-javac --release 25 -encoding UTF-8 -d appjava/target/classes (Get-ChildItem appjava/src/main/java -Recurse -Filter *.java).FullName
-java -cp appjava/target/classes com.flowyk.tasktrack.TaskTrackApp
+powershell -NoProfile -ExecutionPolicy Bypass -File appjava/check-boundaries.ps1
 ```
 
 The app uses Swing from the JDK and has no external runtime dependencies.
@@ -40,7 +41,11 @@ with technical decisions in its [plan](specs/001-minimal-task-tracker/plan.md).
 
 ## Project layout
 
-- `appjava/`: Maven Java application module.
+- `appjava/`: Maven parent with four named Java modules.
+- `appjava/api/`: contracts and injected application context; no application dependencies.
+- `appjava/client/`: Swing UI; depends on API and java.desktop.
+- `appjava/server/`: in-memory implementation; depends on API.
+- `appjava/app/`: launcher that constructs and wires client and server.
 - `specs/`: product principles, feature specifications, plans, and tasks.
 
 The `com.flowyk.tasktrack.api.TrackingApi` interface exposes `getTasks()`,
@@ -55,8 +60,8 @@ See [002 - Tracking API](specs/002-tracking-api/spec.md).
 ## Automated specification checks
 
 Reload the Maven project in IntelliJ, then right-click
-`appjava/src/test/java/com/flowyk/tasktrack/client/TaskTrackWindowTest.java` and select
-**Run 'TaskTrackWindowTest'**. Alternatively, use the Maven tool window to run
+`appjava/client/src/test/java/com/flowyk/tasktrack/client/MainWindowTest.java` and select
+**Run 'MainWindowTest'**. Alternatively, use the Maven tool window to run
 **Lifecycle > test** for `appjava`.
 
 With Maven on PATH, run from the repository root:
@@ -65,7 +70,7 @@ With Maven on PATH, run from the repository root:
 mvn -f appjava/pom.xml test
 ```
 
-Maven writes test results to `appjava/target/surefire-reports/` and returns a
+Maven writes test results to `appjava/{client,server}/target/surefire-reports/` and returns a
 nonzero exit code on failure. Tests need a graphical desktop; they do not show
 windows or send real keyboard/mouse input.
 
@@ -76,3 +81,8 @@ They reference requirement IDs in their names. Markdown requirements are not
 executed directly: these tests encode the observable checks from the spec.
 Desktop stacking/focus, real keyboard input, full process restart, and absence of
 state-file writes remain manual/review checks; these tests do not prove them.
+
+Client and server packages are exported only to tasktrack.app. Client unit tests use
+API doubles; server contract checks run in the server module. Use the module path
+for launch so JPMS boundaries apply.
+See [003 - Java module boundaries](specs/003-module-boundaries/spec.md).

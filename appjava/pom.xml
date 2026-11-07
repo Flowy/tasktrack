@@ -7,23 +7,28 @@
     <groupId>com.flowyk</groupId>
     <artifactId>appjava</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>api</module>
+        <module>client</module>
+        <module>server</module>
+        <module>app</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>25</maven.compiler.release>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.12.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -34,18 +39,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.flowyk.tasktrack.TaskTrackApp</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
+
         </plugins>
     </build>
 </project>

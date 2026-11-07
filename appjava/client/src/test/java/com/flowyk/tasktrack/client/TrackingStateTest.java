@@ -1,8 +1,8 @@
-package com.flowyk.tasktrack.state;
+package com.flowyk.tasktrack.client;
 
 import com.flowyk.tasktrack.client.TrackingState;
 import com.flowyk.tasktrack.api.ApplicationContext;
-import com.flowyk.tasktrack.server.InMemoryTracking;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TrackingStateTest {
     @Test
     public void fr011_selectionIsValidatedAndIndependentOfRunningState() {
-        TrackingState state = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
+        TrackingState state = new TrackingState(new ApplicationContext(new TestTrackingApi()).getTrackingImplementation());
         assertEquals(3, state.getTasks().size());
         assertEquals(state.getTasks().getFirst(), state.getSelectedTask());
         state.start();
@@ -26,13 +26,13 @@ public class TrackingStateTest {
         assertThrows(UnsupportedOperationException.class, () -> state.getTasks().clear());
         state.pause();
         assertEquals(selected, state.getSelectedTask());
-        TrackingState fresh = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
+        TrackingState fresh = new TrackingState(new ApplicationContext(new TestTrackingApi()).getTrackingImplementation());
         assertEquals(fresh.getTasks().getFirst(), fresh.getSelectedTask());
     }
 
     @Test
     public void fr008_initiallyStoppedAndStartsAndPausesRepeatedly() {
-        TrackingState state = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
+        TrackingState state = new TrackingState(new ApplicationContext(new TestTrackingApi()).getTrackingImplementation());
         assertFalse(state.isRunning());
         for (int cycle = 0; cycle < 5; cycle++) {
             state.start();
@@ -46,9 +46,9 @@ public class TrackingStateTest {
 
     @Test
     public void fr009_newStateStartsStoppedIndependently() {
-        TrackingState first = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
+        TrackingState first = new TrackingState(new ApplicationContext(new TestTrackingApi()).getTrackingImplementation());
         first.start();
-        TrackingState second = new TrackingState(new ApplicationContext(new InMemoryTracking()).getTrackingImplementation());
+        TrackingState second = new TrackingState(new ApplicationContext(new TestTrackingApi()).getTrackingImplementation());
         assertFalse(second.isRunning());
         assertTrue(first.isRunning());
     }

@@ -1,11 +1,12 @@
-package com.flowyk.tasktrack.api;
+package com.flowyk.tasktrack.client;
+import com.flowyk.tasktrack.api.*;
 
 import com.flowyk.tasktrack.client.MainWindow;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.flowyk.tasktrack.server.InMemoryTracking;
+
 import com.flowyk.tasktrack.client.TrackingPanel;
 import com.flowyk.tasktrack.client.TrackingState;
 import org.junit.jupiter.api.Test;
@@ -43,25 +44,7 @@ public class TrackingApiTest {
         assertFalse(state.isRunning());
     }
 
-    @Test
-    public void api001_api002_commandContract() {
-        TrackingApi api = new ApplicationContext(new InMemoryTracking()).getTrackingImplementation();
-        assertFalse(api.getTasks().isEmpty());
-        assertThrows(UnsupportedOperationException.class, () -> api.getTasks().clear());
-        for (String task : api.getTasks()) {
-            api.stop(task);
-            api.start(task);
-            api.start(task);
-            assertThrows(IllegalArgumentException.class, () -> api.start(null));
-            assertThrows(IllegalArgumentException.class, () -> api.stop("Unknown task"));
-            api.stop(task);
-            api.stop(task);
-            assertThrows(IllegalArgumentException.class, () -> api.stop(null));
-            assertThrows(IllegalArgumentException.class, () -> api.start("Unknown task"));
-        }
-        api.start(api.getTasks().getFirst());
 
-    }
 
     @Test
     public void api003_clientSelectionIsSentOnlyWithCommands() throws Exception {

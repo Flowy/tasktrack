@@ -1,6 +1,6 @@
 package com.flowyk.tasktrack.client;
 import com.flowyk.tasktrack.api.ApplicationContext;
-import com.flowyk.tasktrack.server.InMemoryTracking;
+
 
 import java.awt.Component;
 import java.awt.Container;
@@ -33,7 +33,7 @@ public class MainWindowTest {
     public void openWindow() throws Exception {
         assertFalse(GraphicsEnvironment.isHeadless(), "These Swing tests require a graphical desktop");
         SwingUtilities.invokeAndWait(() -> {
-            window = MainWindow.createWindow(new ApplicationContext(new InMemoryTracking()));
+            window = MainWindow.createWindow(new ApplicationContext(new TestTrackingApi()));
             button = (JButton) find(window.getContentPane(), "Start timer");
             assertNotNull(button, "Start timer/Pause action is required");
         });

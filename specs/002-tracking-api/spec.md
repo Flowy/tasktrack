@@ -32,7 +32,7 @@ An implementer can supply the interface to TrackingPanel. Listing tasks and clic
 
 ## Out of scope
 
-Network endpoints, persistence, task editing, elapsed time, separate Maven/JPMS build modules.
+Network endpoints, persistence, task editing, elapsed time. Separate Maven/JPMS build modules were subsequently authorized in feature 003.
 
 ## Open questions
 
