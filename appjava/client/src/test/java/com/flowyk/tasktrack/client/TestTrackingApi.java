@@ -8,4 +8,6 @@ final class TestTrackingApi implements TrackingApi {
     public List<String> getTasks() { return List.of("First", "Second", "Third"); }
     public void start(String task) {}
     public void stop(String task) {}
+    public void addTask(String task) { throw new UnsupportedOperationException(); }
+    public void removeTask(String task) { throw new UnsupportedOperationException(); }
 }
