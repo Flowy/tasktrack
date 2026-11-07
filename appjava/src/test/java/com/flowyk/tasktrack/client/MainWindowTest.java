@@ -90,7 +90,7 @@ public class MainWindowTest {
             for (int index = 0; index < selector.getItemCount(); index++) {
                 selector.setSelectedIndex(index);
                 assertEquals(selector.getItemAt(index), selector.getSelectedItem());
-                assertAction("\u23F8", "Pause");
+                assertAction("⏸", "Pause");
             }
             button.doClick(0);
             assertEquals(2, selector.getSelectedIndex());
@@ -130,7 +130,7 @@ public class MainWindowTest {
             assertEquals(48, window.getHeight());
             JButton toggle = (JButton) find(root, "toggleWindowControls");
             assertTrue(toggle.isVisible());
-            assertEquals("\u21C8", toggle.getText());
+            assertEquals("⇈", toggle.getText());
             assertEquals("Show window controls", toggle.getToolTipText());
             assertNotNull(toggle.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke("pressed SPACE")));
             Point initialLocation = window.getLocation();
@@ -161,7 +161,7 @@ public class MainWindowTest {
             assertTrue("Pointer exit leaves controls open", controls.isVisible());
             toggle.doClick(0);
             assertFalse(controls.isVisible());
-            assertEquals("\u21C8", toggle.getText());
+            assertEquals("⇈", toggle.getText());
             assertEquals("Show window controls", toggle.getAccessibleContext().getAccessibleName());
             assertEquals(48, window.getHeight());
             assertEquals(new Point(initialLocation.x + 30, initialLocation.y + 20), window.getLocation());
@@ -217,8 +217,6 @@ public class MainWindowTest {
             window.dispose();
         });
         openWindow();
-        SwingUtilities.invokeAndWait(() -> {
-            assertAction("▶", "Start timer");
-        });
+        SwingUtilities.invokeAndWait(() -> assertAction("▶", "Start timer"));
     }
 }

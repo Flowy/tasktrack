@@ -43,6 +43,7 @@ public class TrackingApiTest {
     public void api001_api002_commandContract() {
         TrackingApi api = new LocalTrackingApi();
         assertFalse(api.getTasks().isEmpty());
+        //noinspection DataFlowIssue
         assertThrows(UnsupportedOperationException.class, () -> api.getTasks().clear());
         for (String task : api.getTasks()) {
             api.stop(task);

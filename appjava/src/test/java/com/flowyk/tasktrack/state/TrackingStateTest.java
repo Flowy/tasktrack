@@ -21,7 +21,6 @@ public class TrackingStateTest {
         assertThrows(IllegalArgumentException.class, () -> state.selectTask("Unknown task"));
         assertThrows(IllegalArgumentException.class, () -> state.selectTask(null));
         assertEquals(selected, state.getSelectedTask());
-        //noinspection DataFlowIssue
         assertThrows(UnsupportedOperationException.class, () -> state.getTasks().clear());
         state.pause();
         assertEquals(selected, state.getSelectedTask());
