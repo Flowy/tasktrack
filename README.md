@@ -1,4 +1,4 @@
-﻿# TaskTrack
+# TaskTrack
 
 A minimal Java desktop window that stays above ordinary application windows.
 Click **Start** to switch to Running; click **Stop** to return to Stopped.
@@ -9,7 +9,7 @@ State lives only in memory and resets when the application closes. There is no t
 In IntelliJ IDEA, import `appjava/pom.xml` and run
 `com.flowyk.tasktrack.TaskTrackApp.main()`.
 
-With a JDK (8 or newer) and Maven installed:
+With JDK 25 and Maven installed:
 
 ```powershell
 mvn -f appjava/pom.xml clean package
@@ -20,7 +20,7 @@ Without Maven, from the repository root:
 
 ```powershell
 New-Item -ItemType Directory -Force appjava/target/classes | Out-Null
-javac -encoding UTF-8 -d appjava/target/classes appjava/src/main/java/com/flowyk/tasktrack/TaskTrackApp.java
+javac --release 25 -encoding UTF-8 -d appjava/target/classes (Get-ChildItem appjava/src/main/java -Recurse -Filter *.java).FullName
 java -cp appjava/target/classes com.flowyk.tasktrack.TaskTrackApp
 ```
 
@@ -42,8 +42,8 @@ with technical decisions in its [plan](specs/001-minimal-task-tracker/plan.md).
 ## Automated specification checks
 
 Reload the Maven project in IntelliJ, then right-click
-`appjava/src/test/java/com/flowyk/tasktrack/TaskTrackAppTest.java` and select
-**Run 'TaskTrackAppTest'**. Alternatively, use the Maven tool window to run
+`appjava/src/test/java/com/flowyk/tasktrack/client/TaskTrackWindowTest.java` and select
+**Run 'TaskTrackWindowTest'**. Alternatively, use the Maven tool window to run
 **Lifecycle > test** for `appjava`.
 
 With Maven on PATH, run from the repository root:

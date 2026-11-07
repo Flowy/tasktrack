@@ -1,5 +1,8 @@
 # 001 - Tasks
 
+- [x] Align Maven and launch documentation with the confirmed Java 25 baseline (QR-003); verify with JDK 25 if available.
+
+- [x] Separate the starter from UI code in `com.flowyk.tasktrack.client` and run existing acceptance checks (FR-001, FR-002, FR-008, FR-009, QR-002).
 - [x] Update scope and acceptance criteria from the user's Start/Stop request.
 - [x] Record toolkit, Java baseline, in-memory state, build, and validation decisions.
 - [x] Configure executable Java build (QR-003).

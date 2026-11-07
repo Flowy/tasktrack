@@ -1,11 +1,12 @@
-﻿# 001 - Technical plan
+# 001 - Technical plan
 
 Status: Planned
 
 ## Decisions
 
+- Keep `TaskTrackApp` as the application starter and delegate window construction to `client.TaskTrackWindow`. The `.client` boundary is a Java package, within the existing application artifact; it owns Swing layout, window configuration, and in-memory UI state. Preserve FR-001, FR-002, FR-008, FR-009 and QR-002 behavior and the existing main class.
 - Use Swing/AWT from the JDK: a small native desktop application without external dependencies.
-- Target Java 8 bytecode to support the available terminal JDK as well as the IDE's newer JDK.
+- Use Java 25, as confirmed by the user and configured in IntelliJ. Set Maven compiler release to 25 and use JDK 25 for builds and verification.
 - Use a JFrame with always-on-top enabled, standard decorations, and exit-on-close.
 - Use a JPanel containing a status label and a JButton. Keep one boolean running state in the window instance and update both labels together on the Swing event dispatch thread.
 - No storage, preferences, network access, or shutdown persistence.

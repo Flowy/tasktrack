@@ -1,4 +1,4 @@
-package com.flowyk.tasktrack;
+package com.flowyk.tasktrack.client;
 
 import java.awt.Component;
 import java.awt.GraphicsEnvironment;
@@ -15,7 +15,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /** Specification 001 checks; desktop stacking and focus still require manual verification. */
-public class TaskTrackAppTest {
+public class TaskTrackWindowTest {
     private JFrame window;
     private JLabel status;
     private JButton button;
@@ -24,7 +24,7 @@ public class TaskTrackAppTest {
     public void openWindow() throws Exception {
         assertFalse("These Swing tests require a graphical desktop", GraphicsEnvironment.isHeadless());
         SwingUtilities.invokeAndWait(() -> {
-            window = TaskTrackApp.createWindow();
+            window = TaskTrackWindow.createWindow();
             for (Component component : window.getContentPane().getComponents()) {
                 if (component instanceof JLabel) status = (JLabel) component;
                 if (component instanceof JButton) button = (JButton) component;
