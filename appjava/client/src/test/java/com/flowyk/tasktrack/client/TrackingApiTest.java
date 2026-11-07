@@ -54,7 +54,9 @@ public class TrackingApiTest {
                 public void stop(String task) { commands.add("stop:" + task); }
             }
             AlternateApi api = new AlternateApi();
-            ApplicationContext context = new ApplicationContext(api);
+            ApplicationContext context = new ApplicationContext();
+            context.setTimeProvider(() -> java.time.Instant.EPOCH);
+            context.setTrackingImplementation(api);
             assertSame(api, context.getTrackingImplementation());
             JFrame window = MainWindow.createWindow(context);
             try {

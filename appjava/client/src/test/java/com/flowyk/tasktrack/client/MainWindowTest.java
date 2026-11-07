@@ -1,5 +1,4 @@
 package com.flowyk.tasktrack.client;
-import com.flowyk.tasktrack.api.ApplicationContext;
 
 
 import java.awt.Component;
@@ -33,7 +32,7 @@ public class MainWindowTest {
     public void openWindow() throws Exception {
         assertFalse(GraphicsEnvironment.isHeadless(), "These Swing tests require a graphical desktop");
         SwingUtilities.invokeAndWait(() -> {
-            window = MainWindow.createWindow(new ApplicationContext(new TestTrackingApi()));
+            window = MainWindow.createWindow(TestTrackingApi.context());
             button = (JButton) find(window.getContentPane(), "Start timer");
             assertNotNull(button, "Start timer/Pause action is required");
         });

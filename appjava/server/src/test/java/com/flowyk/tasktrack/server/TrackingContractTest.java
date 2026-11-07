@@ -4,10 +4,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrackingContractTest {
+    private static ApplicationContext context() {
+        var context = new ApplicationContext();
+        context.setTimeProvider(new LocalTimeProvider());
+        context.setTrackingImplementation(new InMemoryTracking(context));
+        return context;
+    }
     @Test
     public void task001_task002_task003_addRemoveAndSnapshots() {
-        TrackingApi api = new InMemoryTracking();
-        TrackingApi other = new InMemoryTracking();
+        TrackingApi api = context().getTrackingImplementation();
+        TrackingApi other = context().getTrackingImplementation();
         var original = api.getTasks();
         api.addTask("New task");
         api.addTask("New task");
@@ -33,7 +39,7 @@ public class TrackingContractTest {
 
     @Test
     public void task002_invalidNamesDoNotMutateTasks() {
-        TrackingApi api = new InMemoryTracking();
+        TrackingApi api = context().getTrackingImplementation();
         var original = api.getTasks();
         for (String invalid : new String[] { null, "", " ", "\t\n" }) {
             assertThrows(IllegalArgumentException.class, () -> api.addTask(invalid));
@@ -49,7 +55,7 @@ public class TrackingContractTest {
 
     @Test
     public void api001_api002_commandContract() {
-        TrackingApi api = new ApplicationContext(new InMemoryTracking()).getTrackingImplementation();
+        TrackingApi api = context().getTrackingImplementation();
         assertFalse(api.getTasks().isEmpty());
         assertThrows(UnsupportedOperationException.class, () -> api.getTasks().clear());
         for (String task : api.getTasks()) {
