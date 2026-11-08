@@ -13,6 +13,12 @@ public class TrackingState {
     public TrackingState(TrackingApi api) {
         this.api = Objects.requireNonNull(api, "api");
         selectedTask = api.getTasks().isEmpty() ? null : api.getTasks().getFirst();
+        String active = api.getCurrentTask();
+        if (active != null && api.getTasks().contains(active)) {
+            selectedTask = active;
+            startedTask = active;
+            running = true;
+        }
     }
 
     public List<String> getTasks() {

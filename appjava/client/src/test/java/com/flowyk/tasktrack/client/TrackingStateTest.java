@@ -6,6 +6,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TrackingStateTest {
     @Test
+    void active003_restoresSelectionAndRunningState() {
+        var api = new com.flowyk.tasktrack.api.TrackingApi() {
+            public java.util.List<String> getTasks() { return java.util.List.of("First", "Restored"); }
+            public boolean isTracking() { return true; }
+            public String getCurrentTask() { return "Restored"; }
+            public java.time.Duration getElapsedTime(String task) { return java.time.Duration.ofSeconds(60); }
+            public void addTask(String task) {}
+            public void removeTask(String task) {}
+            public void start(String task) {}
+            public void stop(String task) {}
+        };
+        var state = new TrackingState(api);
+        assertEquals("Restored", state.getSelectedTask());
+        assertTrue(state.isRunning());
+        assertTrue(state.isTracking());
+        assertEquals(java.time.Duration.ofSeconds(60), state.getElapsedTime());
+    }
+
+    @Test
     public void fr011_selectionIsValidatedAndIndependentOfRunningState() {
         TrackingState state = new TrackingState(TestTrackingApi.context().getTrackingImplementation());
         assertEquals(3, state.getTasks().size());

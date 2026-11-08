@@ -9,6 +9,9 @@ public interface TrackingApi {
     /** Returns whether any task is currently being timed. */
     boolean isTracking();
 
+    /** Returns the active task name, or null when no task is running. */
+    default String getCurrentTask() { return null; }
+
     /** Adds a nonblank, case-sensitive task name; an existing name is unchanged.
      * @throws IllegalArgumentException if task is null or blank
      */

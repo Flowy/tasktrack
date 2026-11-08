@@ -16,12 +16,13 @@ public final class InMemoryTracking implements TrackingApi {
     private final ApplicationContext context;
     private final CsvTaskHistory history;
     private final JsonTaskList taskList;
+    private final JsonActiveTask activeTask;
     private final Map<String, Duration> elapsed = new HashMap<>();
     private String currentTask;
     private Instant startedAt;
 
     public InMemoryTracking(ApplicationContext context) {
-        this(context, CsvTaskHistory.defaultFile(), JsonTaskList.defaultFile());
+        this(context, CsvTaskHistory.defaultFile(), JsonTaskList.defaultFile(), JsonActiveTask.defaultFile());
     }
 
     InMemoryTracking(ApplicationContext context, Path historyFile) {
@@ -29,13 +30,26 @@ public final class InMemoryTracking implements TrackingApi {
     }
 
     InMemoryTracking(ApplicationContext context, Path historyFile, Path taskListFile) {
+        this(context, historyFile, taskListFile, null);
+    }
+
+    InMemoryTracking(ApplicationContext context, Path historyFile, Path taskListFile, Path activeTaskFile) {
         this.context = Objects.requireNonNull(context, "context");
         this.history = new CsvTaskHistory(Objects.requireNonNull(historyFile, "historyFile"));
         this.taskList = taskListFile == null ? null : new JsonTaskList(taskListFile);
         if (taskList != null) {
             tasks = taskList.load(tasks);
         }
+        activeTask = activeTaskFile == null ? null : new JsonActiveTask(activeTaskFile);
+        var restored = activeTask == null ? null : activeTask.load();
+        if (restored != null && tasks.contains(restored.task())) {
+            currentTask = restored.task();
+            startedAt = restored.startedAt();
+        }
     }
+
+    @Override
+    public String getCurrentTask() { return currentTask; }
 
     @Override
     public List<String> getTasks() {
@@ -65,6 +79,14 @@ public final class InMemoryTracking implements TrackingApi {
         if (updatedTasks.remove(task)) {
             if (taskList != null) taskList.save(updatedTasks);
             if (task.equals(currentTask)) {
+                try {
+                    saveActive(null, null);
+                } catch (RuntimeException failure) {
+                    if (taskList != null) {
+                        try { taskList.save(tasks); } catch (RuntimeException rollback) { failure.addSuppressed(rollback); }
+                    }
+                    throw failure;
+                }
                 currentTask = null;
                 startedAt = null;
             }
@@ -86,7 +108,7 @@ public final class InMemoryTracking implements TrackingApi {
             return;
         }
         Instant now = context.getTimeProvider().now();
-        finishCurrentTask(now);
+        transitionActive(task, now, now);
         currentTask = task;
         startedAt = now;
     }
@@ -95,7 +117,7 @@ public final class InMemoryTracking implements TrackingApi {
     public void stop(String task) {
         validateTask(task);
         if (task.equals(currentTask)) {
-            finishCurrentTask(context.getTimeProvider().now());
+            transitionActive(null, null, context.getTimeProvider().now());
         }
     }
 
@@ -114,6 +136,21 @@ public final class InMemoryTracking implements TrackingApi {
             elapsed.merge(currentTask, Duration.between(startedAt, now), Duration::plus);
             currentTask = null;
             startedAt = null;
+        }
+    }
+
+    private void saveActive(String task, Instant start) {
+        if (activeTask != null) activeTask.save(task == null ? null : new JsonActiveTask.Active(task, start));
+    }
+
+    private void transitionActive(String next, Instant start, Instant now) {
+        saveActive(next, start);
+        try {
+            finishCurrentTask(now);
+        } catch (RuntimeException failure) {
+            try { saveActive(currentTask, startedAt); }
+            catch (RuntimeException rollback) { failure.addSuppressed(rollback); }
+            throw failure;
         }
     }
 

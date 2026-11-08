@@ -29,7 +29,7 @@ Starting, stopping, and resuming a task accumulates only running intervals. Quer
 - **TIME-001:** Record and return accumulated elapsed duration per task, including its running interval.
 - **TIME-004:** Starting another task stops the previous interval. Starting the active task preserves its start time. Stopping an inactive task is a no-op. Removing the active task clears it.
 - **TIME-002:** Repeated commands are harmless; invalid task arguments fail without changing timers.
-- **TIME-003:** Task timing is instance-local; removal clears timing and re-adding starts at zero.
+- **TIME-003:** Completed totals are instance-local; removal clears timing and re-adding starts at zero. Feature 011 supersedes instance isolation for the active interval in production by restoring its start time.
 - **TIME-005:** ApplicationContext exposes an injected TimeProvider returning Instant. LocalTimeProvider supplies system time; InMemoryTracking holds ApplicationContext and resolves getTimeProvider().now() for each time request, using Instant start time for all interval calculations.
 - **TIME-006:** ApplicationContext supports no-argument construction and setters for tracking implementation and time provider. Dependencies can be replaced; subsequent time requests use the current provider. Null setters fail without replacing existing values; accessing an unset dependency fails with a descriptive error.
 

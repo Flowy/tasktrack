@@ -58,6 +58,12 @@ supply it to `new ApplicationContext(api)`. `TaskTrackApp` passes the full conte
 dispatch thread. Stop preserves the selected task and matches the Pause button.
 See [002 - Tracking API](specs/002-tracking-api/spec.md).
 
+The active timer is saved separately in `Documents/TaskTrack/active-task.json`,
+with only its task name and original start time. Startup restores the selected task
+and running state, including time while the application was closed. Stopping or
+removing the active task clears this record. Completed totals are still session-local.
+See [011 - Active task persistence](specs/011-active-task-persistence/spec.md).
+
 ## Automated specification checks
 
 Reload the Maven project in IntelliJ, then right-click

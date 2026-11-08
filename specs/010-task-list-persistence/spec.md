@@ -25,7 +25,7 @@ After editing tasks and restarting, the same names appear in the same order, inc
 - **LIST-QR-001:** Verify using temporary directories, including special characters, restart, empty lists and failures.
 
 ## Out of scope
-Timer restoration, history migration, concurrent writers, UI error dialogs.
+Timer restoration (subsequently added by feature 011), history migration, concurrent writers, UI error dialogs.
 
 ## Open questions
 None blocking; the defaults above preserve current behavior where no file exists.
