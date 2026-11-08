@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrackingContractTest {
-    private static ApplicationContext context() {
+    @org.junit.jupiter.api.io.TempDir
+    java.nio.file.Path directory;
+    private ApplicationContext context() {
         var context = new ApplicationContext();
         context.setTimeProvider(new LocalTimeProvider());
-        context.setTrackingImplementation(new InMemoryTracking(context));
+        context.setTrackingImplementation(new InMemoryTracking(context, directory.resolve("history.csv")));
         return context;
     }
     @Test

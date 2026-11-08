@@ -32,17 +32,23 @@ class TaskTimeTrackingTest {
     }
 
     private final TestTimeProvider now = new TestTimeProvider();
-    private static ApplicationContext context(TimeProvider provider) {
+    @org.junit.jupiter.api.io.TempDir
+    java.nio.file.Path directory;
+    private ApplicationContext context(TimeProvider provider) {
         var context = new ApplicationContext();
         context.setTimeProvider(provider);
-        context.setTrackingImplementation(new InMemoryTracking(context));
+        context.setTrackingImplementation(new InMemoryTracking(context, directory.resolve("history.csv")));
         return context;
     }
 
-    private final ApplicationContext context = context(now);
-    private final InMemoryTracking tracking = (InMemoryTracking) context.getTrackingImplementation();
-    private final String first = tracking.getTasks().getFirst();
-    private final String second = tracking.getTasks().get(1);
+    private ApplicationContext context;
+    private InMemoryTracking tracking;
+    @org.junit.jupiter.api.BeforeEach void setup() {
+        context = context(now);
+        tracking = (InMemoryTracking) context.getTrackingImplementation();
+    }
+    private final String first = "Plan the day";
+    private final String second = "Implement task selection";
 
     @Test
     void time001_time002_accumulatesOnlyRunningIntervals() {
@@ -133,7 +139,7 @@ class TaskTimeTrackingTest {
         assertThrows(IllegalStateException.class, created::getTimeProvider);
         assertThrows(IllegalStateException.class, created::getTrackingImplementation);
         created.setTimeProvider(now);
-        var initial = new InMemoryTracking(created);
+        var initial = new InMemoryTracking(created, directory.resolve("history.csv"));
         created.setTrackingImplementation(initial);
         initial.start(first);
         Instant replacementTime = now.now().plusSeconds(30);
@@ -141,7 +147,7 @@ class TaskTimeTrackingTest {
         assertEquals(Duration.ofSeconds(30), initial.getElapsedTime(first));
         initial.stop(first);
         assertEquals(Duration.ofSeconds(30), initial.getElapsedTime(first));
-        var replacement = new InMemoryTracking(created);
+        var replacement = new InMemoryTracking(created, directory.resolve("history.csv"));
         created.setTrackingImplementation(replacement);
         assertSame(replacement, created.getTrackingImplementation());
         assertEquals(Duration.ZERO, replacement.getElapsedTime(first));

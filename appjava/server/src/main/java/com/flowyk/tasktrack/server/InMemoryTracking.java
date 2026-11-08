@@ -2,6 +2,7 @@ package com.flowyk.tasktrack.server;
 
 import com.flowyk.tasktrack.api.TrackingApi;
 import com.flowyk.tasktrack.api.ApplicationContext;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Duration;
@@ -13,12 +14,18 @@ import java.util.Objects;
 public final class InMemoryTracking implements TrackingApi {
     private List<String> tasks = List.of("Plan the day", "Implement task selection", "Review changes");
     private final ApplicationContext context;
+    private final CsvTaskHistory history;
     private final Map<String, Duration> elapsed = new HashMap<>();
     private String currentTask;
     private Instant startedAt;
 
     public InMemoryTracking(ApplicationContext context) {
+        this(context, CsvTaskHistory.defaultFile());
+    }
+
+    InMemoryTracking(ApplicationContext context, Path historyFile) {
         this.context = Objects.requireNonNull(context, "context");
+        this.history = new CsvTaskHistory(Objects.requireNonNull(historyFile, "historyFile"));
     }
 
     @Override
@@ -92,6 +99,7 @@ public final class InMemoryTracking implements TrackingApi {
 
     private void finishCurrentTask(Instant now) {
         if (currentTask != null) {
+            history.append(currentTask, startedAt, now);
             elapsed.merge(currentTask, Duration.between(startedAt, now), Duration::plus);
             currentTask = null;
             startedAt = null;
