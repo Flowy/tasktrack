@@ -4,6 +4,9 @@ $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 $modules = @('api', 'client', 'server', 'app')
 $modulePath = ($modules | ForEach-Object { Join-Path $root "$_/target/classes" }) -join [IO.Path]::PathSeparator
+$gson = Join-Path $env:USERPROFILE '.m2/repository/com/google/code/gson/gson/2.13.1/gson-2.13.1.jar'
+if (!(Test-Path -LiteralPath $gson)) { throw 'Build with Maven first to resolve Gson 2.13.1.' }
+$modulePath += [IO.Path]::PathSeparator + $gson
 $probeRoot = Join-Path $root ('target/boundary-check-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Force $probeRoot | Out-Null
 foreach ($module in $modules) {

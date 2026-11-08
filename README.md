@@ -6,7 +6,7 @@ On Windows, focus the window and press Alt+F4 to close it.
 Click **Ã¢â€¡Ë†** to reveal the top panel; click **Ã¢â€¡Å ** to hide it. Drag its empty area to move the
 window, or click **Ãƒâ€”** to close the app. Pointer entry and exit do not change panel visibility.
 Use the small **Ã¢â€“Â¶** button to start and **Ã¢ÂÂ¸** to pause. Hover for the action name.
-Choose from three sample tasks in the dropdown. The first task is selected initially; switching tasks preserves Start/Pause state. Task selection and running state live only in memory and reset when the application closes. There is no timer or persistence.
+Choose a task in the dropdown. The first task is selected initially; switching tasks preserves Start/Pause state. Task names and their order load from `Documents/TaskTrack/task-list.json` under your home directory and save whenever tasks are added or removed. A missing file starts with three sample tasks; a saved empty list remains empty. The JSON file is a UTF-8 array of strings, for example `["Plan the day", "Review changes"]`. Invalid files report an error and are preserved. Selection, running state and elapsed totals reset on restart. Completed tracking intervals append separately to `Documents/TaskTrack/tasks.csv`.
 
 ## Run
 
@@ -20,6 +20,7 @@ mvn -f appjava/pom.xml clean package
 $modulePath = (@('api','client','server','app') | ForEach-Object {
     "appjava/$_/target/tasktrack-$_-1.0-SNAPSHOT.jar"
 }) -join [IO.Path]::PathSeparator
+$modulePath += [IO.Path]::PathSeparator + "$env:USERPROFILE/.m2/repository/com/google/code/gson/gson/2.13.1/gson-2.13.1.jar"
 java --module-path $modulePath --module tasktrack.app/com.flowyk.tasktrack.TaskTrackApp
 ```
 
@@ -29,7 +30,7 @@ Module boundaries can be checked after building (JDK 25 on PATH):
 powershell -NoProfile -ExecutionPolicy Bypass -File appjava/check-boundaries.ps1
 ```
 
-The app uses Swing from the JDK and has no external runtime dependencies.
+The app uses Swing from the JDK and Gson 2.13.1 for JSON storage. Maven resolves Gson; include its JAR on the module path when launching manually.
 Always-on-top applies while the window is visible, above ordinary desktop windows.
 
 ## Specification-driven development

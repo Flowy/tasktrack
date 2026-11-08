@@ -15,17 +15,26 @@ public final class InMemoryTracking implements TrackingApi {
     private List<String> tasks = List.of("Plan the day", "Implement task selection", "Review changes");
     private final ApplicationContext context;
     private final CsvTaskHistory history;
+    private final JsonTaskList taskList;
     private final Map<String, Duration> elapsed = new HashMap<>();
     private String currentTask;
     private Instant startedAt;
 
     public InMemoryTracking(ApplicationContext context) {
-        this(context, CsvTaskHistory.defaultFile());
+        this(context, CsvTaskHistory.defaultFile(), JsonTaskList.defaultFile());
     }
 
     InMemoryTracking(ApplicationContext context, Path historyFile) {
+        this(context, historyFile, null);
+    }
+
+    InMemoryTracking(ApplicationContext context, Path historyFile, Path taskListFile) {
         this.context = Objects.requireNonNull(context, "context");
         this.history = new CsvTaskHistory(Objects.requireNonNull(historyFile, "historyFile"));
+        this.taskList = taskListFile == null ? null : new JsonTaskList(taskListFile);
+        if (taskList != null) {
+            tasks = taskList.load(tasks);
+        }
     }
 
     @Override
@@ -44,6 +53,7 @@ public final class InMemoryTracking implements TrackingApi {
         if (!tasks.contains(task)) {
             var updatedTasks = new ArrayList<>(tasks);
             updatedTasks.add(task);
+            if (taskList != null) taskList.save(updatedTasks);
             tasks = List.copyOf(updatedTasks);
         }
     }
@@ -53,6 +63,7 @@ public final class InMemoryTracking implements TrackingApi {
         validateName(task);
         var updatedTasks = new ArrayList<>(tasks);
         if (updatedTasks.remove(task)) {
+            if (taskList != null) taskList.save(updatedTasks);
             if (task.equals(currentTask)) {
                 currentTask = null;
                 startedAt = null;
