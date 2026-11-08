@@ -28,14 +28,14 @@ public final class ManipulationPanel extends JPanel {
         close.setPreferredSize(new Dimension(24, 24));
         close.addActionListener(_ -> controller.close());
         add(close, BorderLayout.EAST);
-        JButton menu = new JButton("\u2630");
+        JButton menu = new JButton("☰");
         menu.setName("windowMenu");
         menu.setToolTipText("Menu");
         menu.getAccessibleContext().setAccessibleName("Menu");
         menu.setCursor(Cursor.getDefaultCursor());
         menu.setMargin(new Insets(0, 4, 0, 4));
         javax.swing.JPopupMenu popup = new javax.swing.JPopupMenu();
-        javax.swing.JMenuItem settings = new javax.swing.JMenuItem("Task settings\u2026");
+        javax.swing.JMenuItem settings = new javax.swing.JMenuItem("Task settings…");
         settings.addActionListener(_ -> openTaskSettings.run());
         popup.add(settings);
         menu.addActionListener(_ -> popup.show(menu, 0, menu.getHeight()));

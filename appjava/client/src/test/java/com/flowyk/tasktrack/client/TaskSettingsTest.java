@@ -4,6 +4,7 @@ import com.flowyk.tasktrack.api.TrackingApi;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,9 +58,9 @@ class TaskSettingsTest {
             JTextField name = (JTextField) find(panel, "taskName");
             JButton add = (JButton) find(panel, "Add");
             JButton remove = (JButton) find(panel, "Remove");
-            assertFalse(remove.isEnabled());
-            name.setText(" ");
-            add.doClick();
+            assertFalse(Objects.requireNonNull(remove).isEnabled());
+            Objects.requireNonNull(name).setText(" ");
+            Objects.requireNonNull(add).doClick();
             assertEquals(0, changes[0]);
             assertEquals(" ", name.getText());
             name.setText("New");
@@ -69,7 +70,7 @@ class TaskSettingsTest {
             remove.doClick();
             assertEquals(List.of("First", "Second"), state.getTasks());
             assertEquals(2, changes[0]);
-            ((JButton) find(panel, "Close")).doClick();
+            ((JButton) Objects.requireNonNull(find(panel, "Close"))).doClick();
             assertTrue(closed[0]);
         });
     }
@@ -82,8 +83,8 @@ class TaskSettingsTest {
             Throwable[] failure = {null};
             try {
                 window.setVisible(true);
-                ((JButton) find(window, "toggleWindowControls")).doClick();
-                ((JButton) find(window, "windowMenu")).doClick();
+                ((JButton) Objects.requireNonNull(find(window, "toggleWindowControls"))).doClick();
+                ((JButton) Objects.requireNonNull(find(window, "windowMenu"))).doClick();
                 JPopupMenu popup = (JPopupMenu) javax.swing.MenuSelectionManager.defaultManager()
                         .getSelectedPath()[0];
                 Timer timer = new Timer(150, _ -> {
@@ -97,18 +98,18 @@ class TaskSettingsTest {
                         assertEquals("Task settings", dialog.getTitle());
                         JList<?> list = (JList<?>) find(dialog, "settingsTasks");
                         JButton remove = (JButton) find(dialog, "Remove");
-                        while (list.getModel().getSize() > 0) {
+                        while (Objects.requireNonNull(list).getModel().getSize() > 0) {
                             list.setSelectedIndex(0);
-                            remove.doClick();
+                            Objects.requireNonNull(remove).doClick();
                         }
                         JComboBox<?> selector = (JComboBox<?>) find(window, "taskSelector");
-                        assertEquals(0, selector.getItemCount());
+                        assertEquals(0, Objects.requireNonNull(selector).getItemCount());
                         TrackingPanel tracker = (TrackingPanel) selector.getParent();
-                        assertFalse(((JButton) tracker.getComponent(1)).isEnabled());
-                        ((JTextField) find(dialog, "taskName")).setText("Recovered");
-                        ((JButton) find(dialog, "Add")).doClick();
+                        assertFalse(tracker.getComponent(1).isEnabled());
+                        ((JTextField) Objects.requireNonNull(find(dialog, "taskName"))).setText("Recovered");
+                        ((JButton) Objects.requireNonNull(find(dialog, "Add"))).doClick();
                         assertEquals("Recovered", selector.getSelectedItem());
-                        assertTrue(((JButton) tracker.getComponent(1)).isEnabled());
+                        assertTrue(tracker.getComponent(1).isEnabled());
                     } catch (Throwable ex) { failure[0] = ex; }
                     finally { if (dialog != null) dialog.dispose(); }
                 });
