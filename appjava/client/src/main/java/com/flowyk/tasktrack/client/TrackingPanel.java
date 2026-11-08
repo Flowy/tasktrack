@@ -20,6 +20,8 @@ public final class TrackingPanel extends JPanel {
     private final Layout layout;
     private final TrackingState state;
     private final JButton timerButton = new JButton();
+    private final JComboBox<String> taskSelector;
+    private boolean refreshing;
 
     public TrackingPanel(Layout layout, TrackingApi api) {
         super(new BorderLayout(layout.distance(Distance.TRACKING_GAP), layout.distance(Distance.VERTICAL_GAP)));
@@ -27,7 +29,7 @@ public final class TrackingPanel extends JPanel {
         this.state = new TrackingState(api);
         setBorder(new javax.swing.border.EmptyBorder(layout.insets(Spacing.TRACKING_PADDING)));
         setPreferredSize(layout.size(Size.TRACKING_PANEL));
-        JComboBox<String> taskSelector = new JComboBox<>(state.getTasks().toArray(String[]::new));
+        taskSelector = new JComboBox<>(state.getTasks().toArray(String[]::new));
         taskSelector.setUI(new BasicComboBoxUI() {
             @Override
             protected JButton createArrowButton() {
@@ -67,7 +69,11 @@ public final class TrackingPanel extends JPanel {
         taskSelector.setToolTipText(layout.text(Text.CHOOSE_TASK));
         taskSelector.getAccessibleContext().setAccessibleName(layout.text(Text.CHOOSE_TASK));
         taskSelector.setSelectedItem(this.state.getSelectedTask());
-        taskSelector.addActionListener(_ -> this.state.selectTask((String) taskSelector.getSelectedItem()));
+        taskSelector.addActionListener(_ -> {
+            if (!refreshing && taskSelector.getSelectedItem() != null) {
+                this.state.selectTask((String) taskSelector.getSelectedItem());
+            }
+        });
         add(taskSelector, BorderLayout.CENTER);
         timerButton.setFont(layout.font(Typeface.TIMER_BUTTON));
         timerButton.setMargin(layout.insets(Spacing.TIMER_MARGIN));
@@ -85,9 +91,32 @@ public final class TrackingPanel extends JPanel {
     }
 
     private void renderState() {
+        timerButton.setEnabled(state.getSelectedTask() != null);
         timerButton.setText(layout.text(state.isRunning() ? Text.PAUSE_SYMBOL : Text.START_SYMBOL));
         String action = layout.text(state.isRunning() ? Text.PAUSE : Text.START_TIMER);
         timerButton.setToolTipText(action);
         timerButton.getAccessibleContext().setAccessibleName(action);
+    }
+
+    public void showTaskSettings(java.awt.Window owner) {
+        javax.swing.JDialog dialog = new javax.swing.JDialog(owner, "Task settings",
+                java.awt.Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(javax.swing.JDialog.DISPOSE_ON_CLOSE);
+        dialog.setContentPane(new TaskSettingsPanel(state, this::refreshTasks, dialog::dispose));
+        dialog.pack();
+        dialog.setLocationRelativeTo(owner);
+        dialog.setVisible(true);
+    }
+
+    private void refreshTasks() {
+        refreshing = true;
+        try {
+            taskSelector.setModel(new javax.swing.DefaultComboBoxModel<>(state.getTasks().toArray(String[]::new)));
+            taskSelector.setSelectedItem(state.getSelectedTask());
+            taskSelector.setEnabled(state.getSelectedTask() != null);
+        } finally {
+            refreshing = false;
+        }
+        renderState();
     }
 }

@@ -20,7 +20,9 @@ public final class MainWindow {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setAlwaysOnTop(true);
         JPanel root = new JPanel(new BorderLayout());
-        ManipulationPanel controls = new ManipulationPanel(new WindowController(window));
+        TrackingPanel tracking = new TrackingPanel(layout, context.getTrackingImplementation());
+        ManipulationPanel controls = new ManipulationPanel(new WindowController(window),
+                () -> tracking.showTaskSettings(window));
         JButton toggle = new JButton();
         toggle.setName(layout.text(Text.TOGGLE_NAME));
         toggle.setPreferredSize(layout.size(Size.TOGGLE));
@@ -36,7 +38,7 @@ public final class MainWindow {
         });
         JPanel body = new JPanel(new BorderLayout());
         body.add(toggle, BorderLayout.WEST);
-        body.add(new TrackingPanel(layout, context.getTrackingImplementation()), BorderLayout.CENTER);
+        body.add(tracking, BorderLayout.CENTER);
         root.add(controls, BorderLayout.NORTH);
         root.add(body, BorderLayout.CENTER);
         window.setContentPane(root);

@@ -8,10 +8,11 @@ public class TrackingState {
     private final TrackingApi api;
     private String selectedTask;
     private boolean running;
+    private String startedTask;
 
     public TrackingState(TrackingApi api) {
         this.api = Objects.requireNonNull(api, "api");
-        selectedTask = api.getTasks().getFirst();
+        selectedTask = api.getTasks().isEmpty() ? null : api.getTasks().getFirst();
     }
 
     public List<String> getTasks() {
@@ -34,7 +35,9 @@ public class TrackingState {
     }
 
     public void start() {
+        if (selectedTask == null) return;
         api.start(selectedTask);
+        startedTask = selectedTask;
         running = true;
     }
 
@@ -43,7 +46,31 @@ public class TrackingState {
     }
 
     public void stop() {
+        if (selectedTask == null) return;
         api.stop(selectedTask);
         running = false;
+        startedTask = null;
+    }
+
+    public void addTask(String task) {
+        api.addTask(task);
+        reconcileSelection();
+    }
+
+    public void removeTask(String task) {
+        api.removeTask(task);
+        if (Objects.equals(task, startedTask) && !getTasks().contains(task)) {
+            running = false;
+            startedTask = null;
+        }
+        reconcileSelection();
+    }
+
+    private void reconcileSelection() {
+        List<String> tasks = getTasks();
+        if (selectedTask == null || !tasks.contains(selectedTask)) {
+            selectedTask = tasks.isEmpty() ? null : tasks.getFirst();
+        }
+        if (tasks.isEmpty()) running = false;
     }
 }
