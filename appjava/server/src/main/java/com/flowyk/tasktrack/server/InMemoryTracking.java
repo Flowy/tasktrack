@@ -27,6 +27,11 @@ public final class InMemoryTracking implements TrackingApi {
     }
 
     @Override
+    public boolean isTracking() {
+        return currentTask != null;
+    }
+
+    @Override
     public void addTask(String task) {
         validateName(task);
         if (!tasks.contains(task)) {
@@ -76,6 +81,7 @@ public final class InMemoryTracking implements TrackingApi {
         }
     }
 
+    @Override
     public Duration getElapsedTime(String task) {
         validateTask(task);
         Duration total = elapsed.getOrDefault(task, Duration.ZERO);

@@ -8,6 +8,22 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTimeTrackingTest {
+    @Test void color001_reportsAuthoritativeActivity() {
+        assertFalse(tracking.isTracking());
+        tracking.start(first);
+        assertTrue(tracking.isTracking());
+        tracking.start(second);
+        tracking.stop(first);
+        assertTrue(tracking.isTracking());
+        tracking.removeTask(first);
+        assertTrue(tracking.isTracking());
+        tracking.stop(second);
+        assertFalse(tracking.isTracking());
+        tracking.start(second);
+        tracking.removeTask(second);
+        assertFalse(tracking.isTracking());
+    }
+
     private static final class TestTimeProvider implements TimeProvider {
         private Instant instant = Instant.parse("2026-11-07T12:00:00Z");
 

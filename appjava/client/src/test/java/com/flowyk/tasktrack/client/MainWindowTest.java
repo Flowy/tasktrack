@@ -66,18 +66,16 @@ public class MainWindowTest {
     @Test
     public void fr001AndFr008_launchStopped() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
-            assertAction("▶", "Start timer");
+            assertAction("0m", "Start timer");
             assertTrue(button.isVisible());
             assertEquals(2, button.getParent().getComponentCount());
-            assertEquals(new Dimension(40, 32), button.getSize());
+            assertEquals(new Dimension(56, 32), button.getSize());
             assertTrue(window.isUndecorated());
             assertEquals(8, window.getContentPane().getWidth() - SwingUtilities.convertPoint(button, 0, 0, window.getContentPane()).x - button.getWidth());
             Component selector = find(window.getContentPane(), "taskSelector");
             assertNotNull(selector);
             assertTrue(selector.getWidth() > 0);
             assertTrue(selector.getX() + selector.getWidth() < button.getX());
-            assertTrue(button.getFont().canDisplay('▶'));
-            assertTrue(button.getFont().canDisplay('⏸'));
         });
     }
 
@@ -93,7 +91,7 @@ public class MainWindowTest {
             for (int index = 0; index < selector.getItemCount(); index++) {
                 selector.setSelectedIndex(index);
                 assertEquals(selector.getItemAt(index), selector.getSelectedItem());
-                assertAction("⏸", "Pause");
+                assertAction("0m", "Pause");
             }
             button.doClick(0);
             assertEquals(2, selector.getSelectedIndex());
@@ -196,9 +194,9 @@ public class MainWindowTest {
         SwingUtilities.invokeAndWait(() -> {
             for (int cycle = 0; cycle < 5; cycle++) {
                 button.doClick(0);
-                assertAction("⏸", "Pause");
+                assertAction("0m", "Pause");
                 button.doClick(0);
-                assertAction("▶", "Start timer");
+                assertAction("0m", "Start timer");
             }
         });
     }
@@ -221,6 +219,6 @@ public class MainWindowTest {
             window.dispose();
         });
         openWindow();
-        SwingUtilities.invokeAndWait(() -> assertAction("▶", "Start timer"));
+        SwingUtilities.invokeAndWait(() -> assertAction("0m", "Start timer"));
     }
 }

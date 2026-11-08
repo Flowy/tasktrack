@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TaskSettingsTest {
     static class Tasks implements TrackingApi {
+        public boolean isTracking() { return false; }
+        public java.time.Duration getElapsedTime(String task) { return java.time.Duration.ZERO; }
         final List<String> tasks = new ArrayList<>(List.of("First", "Second"));
         public List<String> getTasks() { return List.copyOf(tasks); }
         public void addTask(String task) {

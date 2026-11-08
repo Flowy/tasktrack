@@ -15,6 +15,8 @@ public class TrackingApiTest {
     @Test
     public void api002_clientOwnsRunningStateAndPreservesItOnFailure() {
         class Commands implements TrackingApi {
+            public boolean isTracking() { return false; }
+            public java.time.Duration getElapsedTime(String task) { return java.time.Duration.ZERO; }
             public void addTask(String task) { throw new UnsupportedOperationException(); }
             public void removeTask(String task) { throw new UnsupportedOperationException(); }
             boolean fail;
@@ -46,6 +48,8 @@ public class TrackingApiTest {
     public void api003_clientSelectionIsSentOnlyWithCommands() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             class AlternateApi implements TrackingApi {
+                public boolean isTracking() { return false; }
+                public java.time.Duration getElapsedTime(String task) { return java.time.Duration.ZERO; }
                 public void addTask(String task) { throw new UnsupportedOperationException(); }
                 public void removeTask(String task) { throw new UnsupportedOperationException(); }
                 final List<String> commands = new ArrayList<>();

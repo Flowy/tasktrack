@@ -117,3 +117,11 @@ Verification: instance accessor refinement compiled with Java 25; all 11 existin
 Confirmed request: extract the task display and Start/Pause button together into a standalone panel composed by MainWindow. Preserve all existing UI and behavior (FR-001, FR-008, FR-011, FR-012, FR-013).
 
 Verification: IntelliJ project build succeeded; all eight MainWindowTest and three TrackingStateTest checks passed after extraction (FR-001, FR-008, FR-011, FR-012, FR-013). Physical desktop appearance remains unverified.
+
+FR-008 presentation refinement (confirmed): render the existing play/pause symbols as plain clickable text without button border or background. Preserve start/pause behavior, disabled state, keyboard activation, visible keyboard focus, tooltips and accessible names.
+
+Verification (FR-008, QR-002): offline Maven reactor test succeeded on Corretto 25.0.2 after removing timer button chrome. Existing regression suite passes. Physical appearance remains unverified.
+
+FR-008 / QR-002 refinement (confirmed): suppress the timer control's focus outline, including after clicking. Keyboard activation remains supported; the timer control is exempt from the visible focus indicator requirement.
+
+Verification (FR-008, QR-002 focus outline): offline Maven reactor tests passed on Java 25. Focus painting is disabled; physical desktop appearance remains unverified.

@@ -6,6 +6,8 @@ import java.util.List;
 
 /** API-only fixture: client tests must not depend on the server (MOD-003). */
 final class TestTrackingApi implements TrackingApi {
+    public boolean isTracking() { return false; }
+    public java.time.Duration getElapsedTime(String task) { return java.time.Duration.ZERO; }
     static ApplicationContext context() {
         var context = new ApplicationContext();
         context.setTimeProvider(() -> java.time.Instant.EPOCH);

@@ -34,6 +34,14 @@ public class TrackingState {
         return running;
     }
 
+    public boolean isTracking() {
+        return api.isTracking();
+    }
+
+    public java.time.Duration getElapsedTime() {
+        return selectedTask == null ? java.time.Duration.ZERO : api.getElapsedTime(selectedTask);
+    }
+
     public void start() {
         if (selectedTask == null) return;
         api.start(selectedTask);

@@ -56,3 +56,7 @@
 - [x] Migrate all tests and Maven dependency to JUnit Jupiter; run the full suite preserving FR-001/002/008–013, QR-002 and API-001/002/003, API-QR-001 coverage.
 
 Verification: Maven test on Corretto 25.0.2 with Jupiter 5.12.2 and Surefire 3.2.5 passed all 14 tests (8 MainWindowTest, 3 TrackingStateTest, 3 TrackingApiTest), with zero failures, errors or skips. Existing physical desktop acceptance checks remain pending.
+
+- [x] Style timer control as plain clickable text and run existing regressions (FR-008, QR-002). Offline Maven reactor tests passed on Java 25; physical appearance remains a manual check.
+
+- [x] Suppress timer focus outline and verify existing regressions (FR-008, QR-002). Offline Maven reactor tests passed on Java 25. Physical appearance remains unverified.

@@ -78,3 +78,8 @@ Move the existing nested TrackingPanel unchanged into a public final client clas
 ## JUnit Jupiter migration
 
 Use junit-jupiter 5.12.2 (API and engine) with existing Surefire 3.2.5. Migrate all three test classes together, use BeforeEach/AfterEach, and move assertion messages to the final argument. Preserve all existing checks and graphical desktop requirements; no product behavior changes.
+
+## Plain text timer control
+Retain JButton and its existing symbols/actions for FR-008 and QR-002. Disable border, content-area and opaque painting; use a hand cursor while keeping focus painting and existing sizing. Run the existing regression suite; physical appearance remains a manual check.
+
+Disable JButton focus painting on the timer control to remove its post-click outline (FR-008, QR-002). Retain focusability and keyboard bindings.

@@ -15,6 +15,13 @@ public final class Layout {
     public enum Size { TOGGLE, TRACKING_PANEL, TIMER_BUTTON }
     public enum Spacing { TOGGLE_MARGIN, TRACKING_PADDING, TIMER_MARGIN }
     public enum Typeface { TIMER_BUTTON }
+    public enum Palette { TRACKING_ACTIVE }
+
+    public java.awt.Color color(Palette handle) {
+        return switch (handle) {
+            case TRACKING_ACTIVE -> new java.awt.Color(220, 240, 220);
+        };
+    }
 
     public Layout() {
     }
@@ -47,7 +54,7 @@ public final class Layout {
         return switch (handle) {
             case TOGGLE -> new Dimension(24, 24);
             case TRACKING_PANEL -> new Dimension(280, 48);
-            case TIMER_BUTTON -> new Dimension(40, 32);
+            case TIMER_BUTTON -> new Dimension(56, 32);
         };
     }
 
@@ -61,7 +68,7 @@ public final class Layout {
 
     public Font font(Typeface handle) {
         return switch (handle) {
-            case TIMER_BUTTON -> new Font("Segoe UI Symbol", Font.PLAIN, 16);
+            case TIMER_BUTTON -> new Font(Font.MONOSPACED, Font.PLAIN, 16);
         };
     }
 }

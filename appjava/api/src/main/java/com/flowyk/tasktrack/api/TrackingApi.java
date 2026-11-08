@@ -6,6 +6,9 @@ public interface TrackingApi {
 
     List<String> getTasks();
 
+    /** Returns whether any task is currently being timed. */
+    boolean isTracking();
+
     /** Adds a nonblank, case-sensitive task name; an existing name is unchanged.
      * @throws IllegalArgumentException if task is null or blank
      */
@@ -19,4 +22,9 @@ public interface TrackingApi {
     void start(String task);
 
     void stop(String task);
+
+    /** Returns accumulated time, including the current running interval.
+     * @throws IllegalArgumentException if task is null, blank or unknown
+     */
+    java.time.Duration getElapsedTime(String task);
 }
